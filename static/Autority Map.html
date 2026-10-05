@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Spatial GIS Map · Seva Setu Authority</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root{
+    --violet-950:#241a3d;
+    --violet-800:#3d2876;
+    --violet-600:#5b3fa6;
+    --violet-400:#8a72c9;
+    --violet-100:#ece7f8;
+    --violet-050:#f6f4fc;
+    --cyan-600:#0c8f9c;
+    --cyan-500:#0fa3b1;
+    --cyan-100:#dbf3f5;
+    --ink-900:#201a2b;
+    --ink-600:#5a5468;
+    --ink-400:#8b8496;
+    --line:#e6e1f0;
+    --bg:#f7f5fb;
+    --white:#ffffff;
+    --wet:#3f9660;
+    --dry:#c98a2b;
+    --hazard:#c9463f;
+    --road:#5b3fa6;
+    --water:#2b79c9;
+    --light:#c9962b;
+    --radius-card:20px;
+    --radius-pill:999px;
+    --radius-sm:12px;
+    --shadow-card:0 1px 2px rgba(36,26,61,0.04), 0 8px 24px -12px rgba(36,26,61,0.12);
+    --shadow-pop:0 12px 40px -8px rgba(36,26,61,0.28);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink-900);
+    font-family:'Inter',sans-serif;
+    font-feature-settings:"tnum" 1;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  h1,h2,h3,.display{font-family:'Sora',sans-serif;}
+  a{color:inherit; text-decoration:none;}
+  button{font-family:inherit;cursor:pointer;}
+
+  .shell{max-width:1360px; margin:0 auto; padding:0 40px 64px;}
+
+  .brand-bar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 40px; border-bottom:1px solid var(--line); margin-bottom:28px; background:var(--white);
+  }
+  .brand{display:flex; align-items:center; gap:12px;}
+  .brand-mark{
+    width:38px; height:38px; border-radius:12px;
+    background:linear-gradient(135deg, var(--violet-600), var(--violet-800));
+    display:flex; align-items:center; justify-content:center; color:#fff; font-size:18px;
+  }
+  .brand-name{font-family:'Sora',sans-serif; font-size:18px; font-weight:700; color:var(--violet-950);}
+  .brand-crumb{font-size:13px; color:var(--ink-400); font-weight:500;}
+  .brand-crumb span{color:var(--violet-600); font-weight:600;}
+
+  .user-menu{display:flex; align-items:center; gap:16px;}
+  .user-badge{
+    display:flex; align-items:center; gap:9px; padding:7px 14px;
+    background:var(--violet-050); border:1px solid var(--violet-100); border-radius:var(--radius-pill);
+    font-size:12.5px; font-weight:600; color:var(--violet-950);
+  }
+  .logout-btn{
+    display:flex; align-items:center; gap:7px; padding:8px 16px; border-radius:var(--radius-pill);
+    border:1px solid var(--line); background:var(--white); font-size:12.5px; font-weight:700; color:var(--ink-600);
+    transition:all 0.2s ease;
+  }
+  .logout-btn:hover{background:#fff0f0; color:var(--hazard); border-color:#ffd4d4;}
+
+  .page-header{display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px;}
+  .page-header h1{font-size:28px; font-weight:700; color:var(--violet-950); margin:0 0 6px;}
+  .page-header p{margin:0; color:var(--ink-600); font-size:14.5px;}
+
+  .view-toggle{display:flex; background:var(--violet-050); border-radius:var(--radius-pill); padding:3px; gap:2px;}
+  .view-toggle button{
+    border:none; background:transparent; padding:8px 16px; border-radius:var(--radius-pill);
+    font-size:13px; font-weight:700; color:var(--ink-600);
+  }
+  .view-toggle button.active{background:var(--violet-600); color:#fff; box-shadow:0 2px 8px rgba(91,63,166,0.25);}
+
+  .map-layout{
+    display:grid; grid-template-columns:1.6fr 1fr; gap:20px; align-items:start;
+  }
+  .map-card{
+    background:var(--white); border:1px solid var(--line); border-radius:var(--radius-card);
+    box-shadow:var(--shadow-card); overflow:hidden;
+  }
+  .map-card-head{
+    display:flex; justify-content:space-between; align-items:center; padding:18px 20px; border-bottom:1px solid var(--line);
+  }
+  .map-card-head h2{font-size:16px; font-weight:700; margin:0; color:var(--violet-950);}
+
+  #gisMapContainer{
+    height:560px; width:100%; z-index:1;
+  }
+
+  .list-card{
+    background:var(--white); border:1px solid var(--line); border-radius:var(--radius-card);
+    box-shadow:var(--shadow-card); max-height:628px; display:flex; flex-direction:column;
+  }
+  .list-card-head{
+    padding:18px 20px; border-bottom:1px solid var(--line);
+  }
+  .list-card-head h2{font-size:16px; font-weight:700; margin:0; color:var(--violet-950);}
+  .complaints-scroll{overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:12px;}
+
+  .complaint-pill-card{
+    border:1.5px solid var(--line); border-radius:14px; padding:14px 16px; background:var(--white);
+    cursor:pointer; transition:all 0.18s ease;
+  }
+  .complaint-pill-card:hover{
+    border-color:var(--violet-600); box-shadow:0 6px 18px rgba(91,63,166,0.12); transform:translateY(-1px);
+  }
+
+  /* Drawer */
+  .scrim{position:fixed; inset:0; background:rgba(36,26,61,0.45); backdrop-filter:blur(3px); opacity:0; pointer-events:none; transition:opacity 0.2s ease; z-index:90;}
+  .scrim.open{opacity:1; pointer-events:auto;}
+  .drawer{
+    position:fixed; top:0; right:0; bottom:0; width:480px; max-width:92vw; background:var(--white);
+    box-shadow:-10px 0 40px rgba(36,26,61,0.25); transform:translateX(100%); transition:transform 0.25s cubic-bezier(0.16,1,0.3,1);
+    z-index:100; display:flex; flex-direction:column;
+  }
+  .drawer.open{transform:translateX(0);}
+  .drawer-head{padding:22px 26px; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:flex-start;}
+  .drawer-head h2{font-size:18px; margin:0 0 6px; color:var(--violet-950);}
+  .close-btn{border:none; background:var(--violet-050); width:32px; height:32px; border-radius:50%;}
+  .drawer-body{flex:1; overflow-y:auto; padding:22px 26px;}
+  .drawer-section{margin-bottom:20px;}
+  .drawer-section h3{font-size:12px; font-weight:700; text-transform:uppercase; color:var(--ink-400); margin:0 0 10px;}
+  .drawer-actions{padding:18px 26px; border-top:1px solid var(--line); display:flex; gap:12px;}
+  .btn-primary{
+    flex:1; background:linear-gradient(135deg, var(--violet-600), var(--violet-800)); color:#fff; border:none;
+    padding:13px; border-radius:var(--radius-pill); font-weight:700; font-size:13px;
+  }
+  .btn-ghost{border:1px solid var(--line); background:white; padding:13px 18px; border-radius:var(--radius-pill); font-weight:600; font-size:13px;}
+</style>
+</head>
+<body>
+
+<header class="brand-bar">
+  <div class="brand">
+    <div class="brand-mark">📍</div>
+    <div>
+      <div class="brand-name">Seva Setu</div>
+      <div class="brand-crumb">Authority Console · <span>GIS Spatial Map</span></div>
+    </div>
+  </div>
+  <div class="user-menu">
+    <div class="user-badge" id="officerBadge">
+      <i class="fa-solid fa-user-shield text-purple-700"></i>
+      <span id="officerName">Official Authority</span>
+    </div>
+    <button class="logout-btn" onclick="logoutAuthority()">
+      <i class="fa-solid fa-arrow-right-from-bracket"></i>
+      <span>Logout</span>
+    </button>
+  </div>
+</header>
+
+<div class="shell">
+  <div class="page-header">
+    <div>
+      <h1>Spatial GIS Grievance Map</h1>
+      <p>Real-time geographic distribution of citizen complaints across Mumbai wards and municipal clusters.</p>
+    </div>
+    <div class="view-toggle">
+      <button onclick="window.location.href='/authority'">Network graph</button>
+      <button class="active" onclick="window.location.href='/authority/map'">Map view</button>
+    </div>
+  </div>
+
+  <div class="map-layout">
+    <div class="map-card">
+      <div class="map-card-head">
+        <h2>Live GIS Spatial Map</h2>
+        <span class="text-xs font-bold text-purple-700" id="mapPinCount">75 Pins Loaded</span>
+      </div>
+      <div id="gisMapContainer"></div>
+    </div>
+
+    <div class="list-card">
+      <div class="list-card-head">
+        <h2>Geographic Grievances</h2>
+      </div>
+      <div class="complaints-scroll" id="mapComplaintsList">
+        <div style="padding:20px;text-align:center;color:#888;">Loading real complaints...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Drawer -->
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer">
+  <div class="drawer-head">
+    <div>
+      <h2 id="drawerTitle">Complaint Details</h2>
+      <span id="drawerCatBadge" style="display:inline-block;padding:4px 10px;border-radius:99px;font-size:11px;font-weight:700;color:white;background:#5b3fa6;">Roads</span>
+    </div>
+    <button class="close-btn" id="closeDrawer" onclick="closeDrawer()">✕</button>
+  </div>
+  <div class="drawer-body">
+    <div class="drawer-section">
+      <h3>Description</h3>
+      <p id="drawerDesc" style="font-size:14px;line-height:1.5;color:var(--ink-900);background:var(--violet-050);padding:14px;border-radius:12px;border:1px solid var(--line);"></p>
+    </div>
+
+    <div class="drawer-section">
+      <h3>Location &amp; Coordinates</h3>
+      <div style="font-size:13px;color:var(--ink-900);line-height:1.6;">
+        <div>📍 <strong>Locality:</strong> <span id="drawerLoc">MG Road</span></div>
+        <div>🌐 <strong>GIS Coordinates:</strong> <span id="drawerCoords">19.1136, 72.8697</span></div>
+        <div>⚡ <strong>Priority:</strong> <span id="drawerPriority" style="font-weight:700;color:#c9463f;">HIGH</span></div>
+        <div>⏱️ <strong>Status:</strong> <span id="drawerStatus" style="font-weight:700;color:#5b3fa6;">SUBMITTED</span></div>
+      </div>
+    </div>
+
+    <div class="drawer-section">
+      <h3>AI Diagnostic Similarity</h3>
+      <div style="background:var(--violet-050);padding:12px;border-radius:12px;border:1px solid var(--line);font-size:12.5px;color:var(--ink-600);">
+        <div>🧠 <strong>Semantic NLP:</strong> High semantic similarity to active cluster</div>
+        <div>📍 <strong>Geographic Buffer:</strong> &lt; 250m proximity centroid</div>
+      </div>
+    </div>
+  </div>
+  <div class="drawer-actions">
+    <button class="btn-primary" id="drawerActionBtn" onclick="assignSelectedComplaint()">✈ Assign to Field Team</button>
+    <button class="btn-ghost" onclick="closeDrawer()">Close</button>
+  </div>
+</aside>
+
+<script>
+  const catColors = {
+    "Roads": "#5b3fa6",
+    "Water": "#2b79c9",
+    "Sanitation": "#3f9660",
+    "Streetlights": "#c98a2b",
+    "Hazardous": "#c9463f",
+    "Drainage": "#0c8f9c",
+    "Property": "#7c59cf",
+    "Animals": "#d35400",
+    "Other": "#8b8496"
+  };
+
+  let mapInstance = null;
+  let allComplaints = [];
+  let selectedComplaint = null;
+
+  function checkAuthorityAuth() {
+    const token = localStorage.getItem('sevaSetuToken');
+    const userJson = localStorage.getItem('sevaSetuUser');
+    if (token && userJson) {
+      try {
+        const user = JSON.parse(userJson);
+        const nameEl = document.getElementById('officerName');
+        if (nameEl && user.name) nameEl.textContent = user.name + (user.designation ? ` (${user.designation})` : '');
+      } catch(e) {}
+    }
+  }
+  checkAuthorityAuth();
+
+  function logoutAuthority() {
+    localStorage.removeItem('sevaSetuToken');
+    localStorage.removeItem('sevaSetuUser');
+    window.location.href = '/login?role=authority';
+  }
+
+  function initMap() {
+    mapInstance = L.map('gisMapContainer').setView([19.1136, 72.8697], 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 18,
+      attribution: '&copy; OpenStreetMap'
+    }).addTo(mapInstance);
+  }
+
+  async function loadMapData() {
+    initMap();
+    try {
+      const res = await fetch('/api/v1/authority/complaints/map');
+      if (!res.ok) return;
+
+      const data = await res.json();
+      allComplaints = data.complaints || [];
+      document.getElementById('mapPinCount').textContent = `${allComplaints.length} Pins Placed`;
+
+      const listContainer = document.getElementById('mapComplaintsList');
+      listContainer.innerHTML = '';
+
+      allComplaints.forEach((c, idx) => {
+        const color = catColors[c.category] || "#5b3fa6";
+        const lat = c.latitude || 19.1136;
+        const lng = c.longitude || 72.8697;
+
+        const marker = L.circleMarker([lat, lng], {
+          radius: 8,
+          fillColor: color,
+          color: '#ffffff',
+          weight: 2,
+          opacity: 1,
+          fillOpacity: 0.88
+        }).addTo(mapInstance);
+
+        marker.bindPopup(`
+          <div style="font-family:Inter,sans-serif;font-size:12px;">
+            <strong style="color:${color};font-size:13px;">${c.complaint_id}</strong> (${c.category})<br/>
+            <p style="margin:4px 0;">${c.text.substring(0, 80)}...</p>
+            <span style="font-weight:700;color:#5b3fa6;">Click to inspect details</span>
+          </div>
+        `);
+
+        marker.on('click', () => openComplaintDrawer(c));
+
+        const card = document.createElement('div');
+        card.className = 'complaint-pill-card';
+        card.innerHTML = `
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <span style="font-size:12px;font-weight:700;color:var(--violet-600);">${c.complaint_id}</span>
+            <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;color:#fff;background:${color};">${c.category}</span>
+          </div>
+          <p style="font-size:13px;color:var(--ink-900);margin:0 0 6px;line-height:1.4;font-weight:500;">${c.text}</p>
+          <div style="font-size:11px;color:var(--ink-400);display:flex;justify-content:space-between;">
+            <span>📍 ${c.locality || 'Ward Area'}</span>
+            <span style="font-weight:700;color:${c.priority === 'URGENT' ? '#c9463f' : '#5a5468'}">${c.priority}</span>
+          </div>
+        `;
+        card.addEventListener('click', () => {
+          mapInstance.setView([lat, lng], 15);
+          marker.openPopup();
+          openComplaintDrawer(c);
+        });
+        listContainer.appendChild(card);
+      });
+    } catch(e) {
+      console.error(e);
+    }
+  }
+
+  function openComplaintDrawer(c) {
+    selectedComplaint = c;
+    document.getElementById('drawerTitle').textContent = `${c.complaint_id} · Details`;
+    const catBadge = document.getElementById('drawerCatBadge');
+    catBadge.textContent = c.category_name || c.category;
+    catBadge.style.background = catColors[c.category] || "#5b3fa6";
+
+    document.getElementById('drawerDesc').textContent = c.text;
+    document.getElementById('drawerLoc').textContent = c.locality || 'Ward Area';
+    document.getElementById('drawerCoords').textContent = `${(c.latitude || 19.1136).toFixed(4)}, ${(c.longitude || 72.8697).toFixed(4)}`;
+    document.getElementById('drawerPriority').textContent = c.priority || 'MEDIUM';
+    document.getElementById('drawerStatus').textContent = c.status;
+
+    document.getElementById('drawer').classList.add('open');
+    document.getElementById('scrim').classList.add('open');
+  }
+
+  function closeDrawer() {
+    document.getElementById('drawer').classList.remove('open');
+    document.getElementById('scrim').classList.remove('open');
+  }
+  document.getElementById('scrim').addEventListener('click', closeDrawer);
+
+  async function assignSelectedComplaint() {
+    if (!selectedComplaint) return;
+    try {
+      const btn = document.getElementById('drawerActionBtn');
+      btn.disabled = true;
+      btn.textContent = 'Updating Database...';
+      const res = await fetch(`/api/v1/authority/complaints/${selectedComplaint.complaint_id}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'ASSIGNED', comment: 'Assigned to field inspection team via GIS Map' })
+      });
+      if (res.ok) {
+        alert(`Complaint ${selectedComplaint.complaint_id} updated to ASSIGNED!`);
+        closeDrawer();
+        window.location.reload();
+      }
+    } catch(e) {
+      alert('Failed to update status');
+    }
+  }
+
+  loadMapData();
+</script>
+</body>
+</html>

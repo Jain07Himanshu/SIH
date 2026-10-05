@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Login · Seva Setu</title>
+<style>
+  :root {
+    --primary: #6c5ce7;
+    --primary-dark: #5a49e0;
+    --cyan: #00cec9;
+    --dark: #1e1e2f;
+    --muted: #6c757d;
+    --border: #e9eaf4;
+    --danger: #ff6b6b;
+    --success: #20bf6b;
+    --shadow: 0 15px 40px rgba(50, 45, 110, 0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: var(--dark);
+    background:
+      radial-gradient(circle at 90% 5%, rgba(108, 92, 231, .10), transparent 25%),
+      radial-gradient(circle at 5% 35%, rgba(0, 206, 201, .08), transparent 25%),
+      linear-gradient(135deg, #ffffff 0%, #f6f7ff 55%, #eef3ff 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  .navbar {
+    height: 82px;
+    padding: 0 6%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255,255,255,.84);
+    backdrop-filter: blur(18px);
+    border-bottom: 1px solid rgba(230,231,242,.7);
+  }
+  .brand-icon {
+    width: 40px; height: 40px; border-radius: 12px;
+    background: linear-gradient(135deg, var(--primary), #8879f4);
+    display: grid; place-items: center; color: white; font-size: 18px;
+  }
+  .brand-name { font-weight: 800; font-size: 17px; letter-spacing: -.4px; }
+  .brand-name a { color: inherit; text-decoration: none; }
+
+  .wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+  .card {
+    width: 100%;
+    max-width: 420px;
+    background: rgba(255,255,255,.97);
+    border: 1px solid var(--border);
+    border-radius: 26px;
+    box-shadow: var(--shadow);
+    padding: 34px;
+  }
+  .eyebrow {
+    font-size: 11px; color: var(--primary); text-transform: uppercase;
+    letter-spacing: 1.5px; font-weight: 900; margin-bottom: 6px;
+  }
+  h1 { font-size: 26px; letter-spacing: -.8px; margin-bottom: 6px; }
+  .sub { color: var(--muted); font-size: 13px; margin-bottom: 24px; }
+
+  .role-toggle {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+  .role-pill {
+    text-align: center;
+    padding: 10px;
+    border-radius: 999px;
+    border: 1.5px solid var(--border);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--muted);
+    cursor: pointer;
+    transition: .2s;
+    user-select: none;
+  }
+  .role-pill.active {
+    border-color: var(--primary);
+    background: #f0eeff;
+    color: var(--primary);
+  }
+
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    margin: 14px 0 6px;
+    color: #4a4b5c;
+  }
+  input {
+    width: 100%;
+    padding: 13px 15px;
+    border-radius: 14px;
+    border: 1.5px solid var(--border);
+    outline: none;
+    font-size: 14px;
+    transition: .2s;
+    background: #fbfbff;
+  }
+  input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(108,92,231,.08);
+  }
+
+  .submit-btn {
+    width: 100%;
+    margin-top: 22px;
+    border: 0;
+    padding: 14px 20px;
+    border-radius: 999px;
+    font-weight: 800;
+    font-size: 14px;
+    color: white;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    box-shadow: 0 12px 25px rgba(108,92,231,.25);
+    transition: .2s;
+  }
+  .submit-btn:hover { transform: translateY(-2px); }
+  .submit-btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+
+  .msg {
+    margin-top: 14px;
+    font-size: 12.5px;
+    padding: 10px 13px;
+    border-radius: 12px;
+    display: none;
+  }
+  .msg.error { display: block; background: #fff0f0; color: #c0392b; }
+  .msg.success { display: block; background: #eafaf1; color: #1e8e5a; }
+
+  .footer-link {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+  .footer-link a { color: var(--primary); font-weight: 700; text-decoration: none; }
+</style>
+</head>
+<body>
+  <header class="navbar">
+    <a href="/" style="display:flex; align-items:center; gap:12px; text-decoration:none; color:inherit;">
+      <div class="brand-icon">📍</div>
+      <div class="brand-name">Seva Setu</div>
+    </a>
+  </header>
+
+  <div class="wrap">
+    <div class="card">
+      <div class="eyebrow">Welcome back</div>
+      <h1 id="heading">Login to Seva Setu</h1>
+      <p class="sub" id="subtext">Access your dashboard to report or manage civic issues.</p>
+
+      <div class="role-toggle">
+        <div class="role-pill" data-role="citizen" id="pillCitizen">👤 Citizen</div>
+        <div class="role-pill" data-role="authority" id="pillAuthority">🏛️ Authority</div>
+      </div>
+
+      <form id="loginForm">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="you@example.com" required />
+
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="••••••••" required />
+
+        <button type="submit" class="submit-btn" id="submitBtn">Login</button>
+      </form>
+
+      <div class="msg" id="msg"></div>
+
+      <div class="footer-link">
+        New here? <a href="#" id="registerLink">Create an account</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    let role = params.get('role') === 'authority' ? 'authority' : 'citizen';
+
+    const pillCitizen = document.getElementById('pillCitizen');
+    const pillAuthority = document.getElementById('pillAuthority');
+    const heading = document.getElementById('heading');
+    const subtext = document.getElementById('subtext');
+    const registerLink = document.getElementById('registerLink');
+    const msg = document.getElementById('msg');
+    const submitBtn = document.getElementById('submitBtn');
+    const form = document.getElementById('loginForm');
+
+    function applyRole() {
+      pillCitizen.classList.toggle('active', role === 'citizen');
+      pillAuthority.classList.toggle('active', role === 'authority');
+      heading.textContent = role === 'authority' ? 'Authority Login' : 'Citizen Login';
+      subtext.textContent = role === 'authority'
+        ? 'Access the dashboard to manage and resolve complaints.'
+        : 'Access your dashboard to report and track civic issues.';
+      registerLink.href = role === 'authority' ? '/register/authority' : '/register/citizen';
+    }
+    applyRole();
+
+    pillCitizen.addEventListener('click', () => { role = 'citizen'; applyRole(); });
+    pillAuthority.addEventListener('click', () => { role = 'authority'; applyRole(); });
+
+    function showMsg(text, type) {
+      msg.textContent = text;
+      msg.className = 'msg ' + type;
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      msg.className = 'msg';
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Logging in...';
+
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      try {
+        const res = await fetch('/api/v1/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ role, email, password }),
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          showMsg(data.detail || 'Login failed. Please check credentials.', 'error');
+          return;
+        }
+
+        // Store JWT token and user info in localStorage
+        localStorage.setItem('sevaSetuToken', data.access_token);
+        localStorage.setItem('sevaSetuUser', JSON.stringify(data.user));
+
+        showMsg('Login successful! Redirecting...', 'success');
+        setTimeout(() => {
+          if (data.user.role.toUpperCase() === 'AUTHORITY') {
+            window.location.href = '/authority';
+          } else {
+            window.location.href = '/citizen';
+          }
+        }, 600);
+      } catch (err) {
+        showMsg('Could not reach the server. Is the backend running?', 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Login';
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Seva Setu - Register</title>
+  <style>
+    :root { --primary:#6c5ce7; --primary-dark:#5a49e0; --cyan:#00cec9; --dark:#1e1e2f; --muted:#6c757d; --bg:#f7f8ff; --border:#e9eaf4; --danger:#e74c3c; --success:#20bf6b; }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh;background:radial-gradient(circle at 90% 5%,rgba(108,92,231,.10),transparent 25%),linear-gradient(135deg,#fff 0%,#f6f7ff 55%,#eef3ff 100%);color:var(--dark);display:grid;place-items:center;padding:24px}
+    .card{width:min(520px,100%);background:rgba(255,255,255,.96);border:1px solid var(--border);border-radius:26px;box-shadow:0 20px 50px rgba(50,45,110,.10);padding:34px}
+    .brand{font-weight:900;font-size:20px;margin-bottom:24px}.eyebrow{color:var(--primary);font-size:11px;text-transform:uppercase;letter-spacing:1.5px;font-weight:900}.role-pill{display:inline-block;margin:10px 0 18px;padding:7px 12px;border-radius:999px;background:#eeecff;color:var(--primary);font-size:12px;font-weight:800}
+    h1{font-size:32px;letter-spacing:-1px;margin-bottom:8px}.sub{color:var(--muted);font-size:14px;line-height:1.6;margin-bottom:24px}
+    label{display:block;font-size:12px;font-weight:800;margin:14px 0 7px}input{width:100%;padding:13px 14px;border:1px solid #ddddec;border-radius:12px;outline:none}input:focus{border-color:#aaa0ff;box-shadow:0 0 0 4px rgba(108,92,231,.08)}
+    button{width:100%;border:0;border-radius:999px;padding:14px 20px;margin-top:20px;font-weight:800;color:#fff;background:linear-gradient(135deg,var(--primary),var(--primary-dark));cursor:pointer;box-shadow:0 12px 25px rgba(108,92,231,.22);transition:.2s}
+    button:hover{transform:translateY(-2px)}
+    button:disabled{opacity:.6;cursor:not-allowed;transform:none}
+    .back{display:block;text-align:center;margin-top:14px;color:var(--primary);font-size:13px;font-weight:700;text-decoration:none}
+    .message{min-height:20px;margin-top:12px;text-align:center;font-size:13px;font-weight:600}
+    .message.success{color:var(--success)}
+    .message.error{color:var(--danger)}
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="brand">📍 Seva Setu</div>
+    <div class="eyebrow">Create your account</div>
+    <div class="role-pill" id="rolePill">Citizen</div>
+    <h1>Register</h1>
+    <p class="sub">Create your Seva Setu account to report, track, and manage civic complaints.</p>
+    <form id="registerForm">
+      <label for="name">Full name</label>
+      <input id="name" name="name" type="text" placeholder="Enter your name" required />
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" placeholder="you@example.com" required />
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" placeholder="Create a password" minlength="6" required />
+      <button type="submit" id="submitBtn">Create Account</button>
+      <div class="message" id="message"></div>
+    </form>
+    <a class="back" href="/">← Back to Seva Setu</a>
+  </main>
+  <script>
+    const form = document.getElementById('registerForm');
+    const msgEl = document.getElementById('message');
+    const submitBtn = document.getElementById('submitBtn');
+
+    form.addEventListener('submit', async function(event) {
+      event.preventDefault();
+      msgEl.textContent = '';
+      msgEl.className = 'message';
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Creating account...';
+
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      try {
+        const res = await fetch('/api/v1/auth/register/citizen', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password })
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          msgEl.textContent = data.detail || 'Registration failed.';
+          msgEl.className = 'message error';
+          return;
+        }
+
+        // Store session
+        localStorage.setItem('sevaSetuToken', data.access_token);
+        localStorage.setItem('sevaSetuUser', JSON.stringify(data.user));
+
+        msgEl.textContent = 'Account created successfully! Redirecting to login...';
+        msgEl.className = 'message success';
+        form.reset();
+
+        setTimeout(() => {
+          window.location.href = '/login?role=citizen';
+        }, 1000);
+      } catch (err) {
+        msgEl.textContent = 'Network error. Could not connect to server.';
+        msgEl.className = 'message error';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Create Account';
+      }
+    });
+  </script>
+</body>
+</html>

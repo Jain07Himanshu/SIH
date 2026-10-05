@@ -1,0 +1,33 @@
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Environments & Virtual Envs
+.venv/
+venv/
+ENV/
+env/
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Local databases & logs
+*.db-shm
+*.db-wal
+*.log
+
+# Environment variables
+.env
+.env.local
+
+# IDE & OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+Desktop.ini

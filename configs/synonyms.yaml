@@ -1,0 +1,112 @@
+synonyms:
+  pothole:
+    - potholes
+    - road hole
+    - road crater
+    - crater
+    - ditch on road
+    - broken road patch
+    - asphalt hole
+    - pit on road
+    - gaddha
+    - khadda
+    - khadde
+    - gada
+
+  road damage:
+    - damaged road
+    - broken road
+    - uneven road
+    - road surface deterioration
+    - worn out road
+    - poor road condition
+    - sadak
+    - rasta
+
+  garbage:
+    - waste
+    - trash
+    - rubbish
+    - litter
+    - kachra
+    - debris
+    - refuse
+    - solid waste
+    - kooda
+
+  water leakage:
+    - pipe burst
+    - leaking pipeline
+    - water leak
+    - pipeline breach
+    - tap leak
+    - water gushing
+    - nal leak
+    - paani leakage
+    - pani leakage
+
+  tap:
+    - nal
+    - water tap
+    - public tap
+
+  no water:
+    - water shortage
+    - water cut
+    - no water supply
+    - water stopped
+    - water crisis
+    - dry taps
+    - pani nahi
+
+  street light:
+    - streetlight
+    - lamp post
+    - pole light
+    - road light
+    - sodium lamp
+    - led street lamp
+    - bijli pole
+
+  not working:
+    - faulty
+    - broken
+    - defective
+    - out of order
+    - off
+    - dysfunctional
+    - damaged
+    - band hai
+
+  drainage:
+    - gutter
+    - sewer
+    - drain
+    - storm drain
+    - nullah
+    - sewage line
+    - naali
+
+  overflowing:
+    - spilling over
+    - flooding
+    - gushing out
+    - backing up
+    - choked and leaking
+    - overflow
+
+  traffic jam:
+    - traffic congestion
+    - gridlock
+    - vehicle bottleneck
+    - bumper to bumper
+    - choked traffic
+    - jaam
+
+  power cut:
+    - power outage
+    - electricity failure
+    - blackout
+    - no electricity
+    - power down
+    - bijli gul

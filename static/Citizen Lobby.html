@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Citizen Lobby · Seva Setu</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <style>
+    html { scroll-behavior: smooth; }
+    body { font-family: Inter, Arial, sans-serif; }
+    .hero-bg {
+      background:
+        radial-gradient(circle at 90% 10%, rgba(91, 63, 166, 0.12), transparent 28%),
+        radial-gradient(circle at 5% 80%, rgba(12, 143, 156, 0.09), transparent 25%),
+        linear-gradient(135deg, #ffffff, #f6f4fc);
+    }
+    .grid-bg {
+      background-image:
+        linear-gradient(rgba(91, 63, 166, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(91, 63, 166, 0.05) 1px, transparent 1px);
+      background-size: 30px 30px;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+  <!-- Top Navigation Header with Profile & Logout -->
+  <header class="sticky top-0 z-50 border-b border-slate-200/80 bg-white/90 backdrop-blur-md">
+    <div class="mx-auto flex h-20 max-w-6xl items-center justify-between px-6">
+      <a href="/" class="flex items-center gap-3 text-inherit no-underline">
+        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#5b3fa6] to-[#3d2876] text-white shadow-md shadow-purple-900/20">
+          <i class="fa-solid fa-location-dot"></i>
+        </div>
+        <div>
+          <span class="text-lg font-black tracking-tight text-slate-900">Seva Setu</span>
+          <span class="block text-[11px] font-semibold text-purple-700 uppercase tracking-wider">Citizen Portal</span>
+        </div>
+      </a>
+
+      <div class="flex items-center gap-4">
+        <div id="userProfileBadge" class="hidden sm:flex items-center gap-2 rounded-full bg-purple-50 px-3.5 py-1.5 text-xs font-semibold text-purple-900 border border-purple-100">
+          <i class="fa-solid fa-circle-user text-purple-700"></i>
+          <span id="userNameDisplay">Citizen</span>
+        </div>
+        <button onclick="logoutCitizen()" class="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-700 shadow-sm transition hover:bg-slate-50 hover:text-red-600 hover:border-red-200">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          <span>Logout</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===================== 1. LANDING HUB VIEW ===================== -->
+  <div id="landingPage" class="min-h-screen hero-bg flex flex-col justify-between">
+    <section class="mx-auto grid max-w-6xl items-center gap-12 px-5 py-12 lg:grid-cols-2 lg:px-8 my-auto">
+      <div>
+        <div class="mb-6 inline-flex items-center gap-2 rounded-full border border-purple-200 bg-purple-50 px-4 py-2 text-xs font-bold text-purple-700">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+          AI-Powered Civic Intelligence
+        </div>
+
+        <h2 class="max-w-3xl text-5xl font-black leading-tight tracking-tight text-slate-900 md:text-6xl">
+          Your Voice.
+          <span class="block text-[#5b3fa6]">Smarter Cities.</span>
+        </h2>
+
+        <p class="mt-6 max-w-xl text-lg leading-8 text-slate-600">
+          Report civic issues instantly, let AI classify and cluster duplicate complaints, and track resolution progress with real-time audit steppers.
+        </p>
+
+        <div class="mt-8 flex flex-wrap gap-4">
+          <button
+            onclick="openPortal('submit')"
+            class="flex items-center gap-3 rounded-2xl bg-[#5b3fa6] px-7 py-4 font-bold text-white shadow-lg shadow-purple-900/25 transition hover:-translate-y-1 hover:bg-[#3d2876]"
+          >
+            <i class="fa-solid fa-file-circle-plus text-lg"></i>
+            File a Complaint
+          </button>
+
+          <button
+            onclick="openPortal('track')"
+            class="flex items-center gap-3 rounded-2xl border border-purple-200 bg-white px-7 py-4 font-bold text-[#5b3fa6] shadow-sm transition hover:-translate-y-1 hover:bg-purple-50"
+          >
+            <i class="fa-solid fa-magnifying-glass text-lg"></i>
+            Track Complaint Status
+          </button>
+        </div>
+      </div>
+
+      <!-- Live Platform Counters Card -->
+      <div class="relative mx-auto w-full max-w-xl">
+        <div class="grid-bg absolute inset-0 rounded-3xl"></div>
+        <div class="relative rounded-3xl border border-purple-100 bg-white p-6 shadow-2xl shadow-purple-900/10">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+            <div>
+              <p class="text-xs text-slate-400">Live Database Overview</p>
+              <h3 class="mt-1 text-xl font-extrabold text-slate-900">
+                Civic Intelligence Hub
+              </h3>
+            </div>
+            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-50 text-purple-700">
+              <i class="fa-solid fa-brain"></i>
+            </div>
+          </div>
+
+          <div class="mt-5 grid grid-cols-2 gap-4">
+            <div class="rounded-2xl bg-purple-50 p-4">
+              <i class="fa-solid fa-file-circle-check text-xl text-purple-700"></i>
+              <p class="mt-3 text-2xl font-black text-slate-900" id="hubTotalCount">75</p>
+              <p class="text-xs text-slate-500">Total Grievances</p>
+            </div>
+            <div class="rounded-2xl bg-emerald-50 p-4">
+              <i class="fa-solid fa-check-double text-xl text-emerald-600"></i>
+              <p class="mt-3 text-2xl font-black text-slate-900" id="hubResolvedCount">19</p>
+              <p class="text-xs text-slate-500">Resolved</p>
+            </div>
+            <div class="rounded-2xl bg-amber-50 p-4">
+              <i class="fa-solid fa-hourglass-half text-xl text-amber-600"></i>
+              <p class="mt-3 text-2xl font-black text-slate-900" id="hubProgressCount">19</p>
+              <p class="text-xs text-slate-500">In Progress</p>
+            </div>
+            <div class="rounded-2xl bg-blue-50 p-4">
+              <i class="fa-solid fa-layer-group text-xl text-blue-600"></i>
+              <p class="mt-3 text-2xl font-black text-slate-900" id="hubMergedCount">24</p>
+              <p class="text-xs text-slate-500">Duplicates Merged</p>
+            </div>
+          </div>
+
+          <div class="mt-5 flex items-center justify-between rounded-2xl bg-slate-900 p-4 text-white">
+            <div class="flex items-center gap-3">
+              <i class="fa-solid fa-robot text-lg text-purple-300"></i>
+              <p class="text-sm font-semibold">AI Normalization & Clustering</p>
+            </div>
+            <p class="text-lg font-black text-purple-300">Active</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick Tracker List for logged in Citizen -->
+    <section class="mx-auto max-w-6xl px-6 pb-12 w-full">
+      <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h3 class="text-base font-bold text-slate-900 mb-4 flex items-center justify-between">
+          <span><i class="fa-solid fa-clock-rotate-left mr-2 text-purple-700"></i>Recent Grievance Feed in Mumbai Metro</span>
+          <span class="text-xs font-normal text-slate-400">Click to track live status</span>
+        </h3>
+        <div class="grid gap-3 sm:grid-cols-2 md:grid-cols-3" id="sampleTrackerCards">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </section>
+
+    <footer class="border-t border-slate-200 bg-white/80 py-6">
+      <div class="mx-auto max-w-6xl px-5 text-center text-xs text-slate-400">
+        &copy; 2026 Seva Setu AI &mdash; A Digital Initiative for Transparent Civic Governance
+      </div>
+    </footer>
+  </div>
+
+  <!-- ===================== 2. COMPLAINT SUBMISSION PAGE ===================== -->
+  <div id="complaintPage" class="hidden min-h-screen hero-bg">
+    <div class="mx-auto max-w-5xl px-5 py-6">
+      <button onclick="goHome()" class="flex items-center gap-2 text-sm font-bold text-purple-700 hover:text-purple-900 mb-6">
+        <i class="fa-solid fa-arrow-left"></i>
+        <span>Back to Citizen Lobby</span>
+      </button>
+
+      <!-- FORM VIEW -->
+      <div id="complaintFormView">
+        <div class="mb-8">
+          <div class="mb-4 inline-flex items-center gap-2 rounded-full border border-purple-200 bg-purple-50 px-4 py-2 text-xs font-bold text-purple-700">
+            <i class="fa-solid fa-file-circle-plus"></i>
+            New Grievance
+          </div>
+          <h2 class="text-3xl font-black tracking-tight text-slate-900 md:text-4xl">
+            Tell us what's wrong
+          </h2>
+          <p class="mt-2 max-w-xl text-slate-600">
+            Fill in the details below. Our AI will clean, normalize, and detect if this issue is already being addressed.
+          </p>
+        </div>
+
+        <form id="complaintForm" onsubmit="submitComplaint(event)" class="grid gap-6 lg:grid-cols-3">
+          <div class="space-y-6 lg:col-span-2">
+            <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+              <label class="mb-2 block text-sm font-bold text-slate-800">
+                What is the issue category? <span class="text-rose-500">*</span>
+              </label>
+              <select id="category" required class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-700 outline-none focus:border-purple-600 focus:ring-4 focus:ring-purple-100">
+                <option value="">Select a category</option>
+                <option value="roads">Roads &amp; Potholes</option>
+                <option value="garbage">Garbage &amp; Sanitation</option>
+                <option value="water">Water Supply</option>
+                <option value="drainage">Drainage &amp; Sewage</option>
+                <option value="electricity">Streetlights &amp; Electricity</option>
+                <option value="property">Damage to Public Property</option>
+                <option value="animals">Stray Animals</option>
+                <option value="noise">Noise Pollution</option>
+                <option value="other">Other</option>
+              </select>
+
+              <label class="mb-2 mt-5 block text-sm font-bold text-slate-800">
+                Describe the complaint <span class="text-rose-500">*</span>
+              </label>
+              <textarea id="description" required rows="5" placeholder="e.g. Severe pothole on MG Road near the traffic signal, causing vehicles to skid and creating dangerous traffic jams..." class="w-full resize-none rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-700 outline-none focus:border-purple-600 focus:ring-4 focus:ring-purple-100"></textarea>
+              <p class="mt-2 text-xs text-slate-400">Mention location landmarks, duration, and urgency.</p>
+            </div>
+
+            <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+              <label class="mb-2 block text-sm font-bold text-slate-800">
+                Locality / Area <span class="text-rose-500">*</span>
+              </label>
+              <input id="locality" required type="text" placeholder="e.g. MG Road Junction, Andheri West" class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-700 outline-none focus:border-purple-600 focus:ring-4 focus:ring-purple-100" />
+
+              <div class="mt-5 grid gap-5 sm:grid-cols-2">
+                <div>
+                  <label class="mb-2 block text-sm font-bold text-slate-800">Ward / Zone</label>
+                  <input id="ward" type="text" placeholder="e.g. Ward 12" class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-700 outline-none focus:border-purple-600 focus:ring-4 focus:ring-purple-100" />
+                </div>
+                <div>
+                  <label class="mb-2 block text-sm font-bold text-slate-800">Nearby Landmark</label>
+                  <input id="landmark" type="text" placeholder="e.g. Near Metro Pillar 42" class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-700 outline-none focus:border-purple-600 focus:ring-4 focus:ring-purple-100" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-6">
+            <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+              <label class="mb-3 block text-sm font-bold text-slate-800">Urgency Level</label>
+              <div class="space-y-2">
+                <label class="flex cursor-pointer items-center gap-3 rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-700 has-[:checked]:border-purple-600 has-[:checked]:bg-purple-50">
+                  <input type="radio" name="priority" value="low" class="accent-purple-600" />
+                  Low — Minor inconvenience
+                </label>
+                <label class="flex cursor-pointer items-center gap-3 rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-700 has-[:checked]:border-purple-600 has-[:checked]:bg-purple-50">
+                  <input type="radio" name="priority" value="medium" checked class="accent-purple-600" />
+                  Medium — Needs attention soon
+                </label>
+                <label class="flex cursor-pointer items-center gap-3 rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-700 has-[:checked]:border-purple-600 has-[:checked]:bg-purple-50">
+                  <input type="radio" name="priority" value="high" class="accent-purple-600" />
+                  High — Safety hazard
+                </label>
+                <label class="flex cursor-pointer items-center gap-3 rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-700 has-[:checked]:border-purple-600 has-[:checked]:bg-purple-50">
+                  <input type="radio" name="priority" value="urgent" class="accent-purple-600" />
+                  Urgent — Immediate danger
+                </label>
+              </div>
+            </div>
+
+            <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+              <div class="mb-3 flex items-center justify-between">
+                <label class="text-sm font-bold text-slate-800">Citizen Info</label>
+                <label class="flex items-center gap-2 text-xs font-semibold text-slate-500">
+                  <input id="anonymous" type="checkbox" onchange="toggleContact()" class="accent-purple-600" />
+                  Stay anonymous
+                </label>
+              </div>
+              <div id="contactFields" class="space-y-3">
+                <input id="fullName" type="text" placeholder="Full name" class="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm text-slate-700 outline-none focus:border-purple-600 focus:ring-4 focus:ring-purple-100" />
+                <input id="phone" type="tel" placeholder="Mobile number" class="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm text-slate-700 outline-none focus:border-purple-600 focus:ring-4 focus:ring-purple-100" />
+              </div>
+            </div>
+
+            <button type="submit" class="flex w-full items-center justify-center gap-3 rounded-2xl bg-[#5b3fa6] px-7 py-4 font-bold text-white shadow-lg shadow-purple-900/25 transition hover:bg-[#3d2876]">
+              <i class="fa-solid fa-paper-plane"></i>
+              Submit Complaint
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- SUCCESS VIEW WITH TRACK ACTION -->
+      <div id="complaintSuccessView" class="hidden mx-auto max-w-xl text-center py-12">
+        <div class="rounded-3xl border border-purple-100 bg-white p-8 shadow-xl">
+          <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 text-3xl mb-5">
+            <i class="fa-solid fa-check"></i>
+          </div>
+          <h3 class="text-2xl font-black text-slate-900">Complaint Logged Successfully</h3>
+          <p class="mt-2 text-sm text-slate-500">Your complaint ID has been registered in the municipal database:</p>
+
+          <div class="my-6 rounded-2xl bg-purple-50 p-4 border border-purple-100">
+            <span class="text-xs text-purple-700 font-bold uppercase tracking-wider block">Complaint ID</span>
+            <span class="text-3xl font-black text-slate-900 tracking-wider" id="complaintId">SS-100025</span>
+          </div>
+
+          <div class="mb-6 text-xs font-semibold text-slate-600" id="aiClassification">
+            AI classified this as "Roads & Potholes"
+          </div>
+
+          <div class="flex flex-col gap-3">
+            <button onclick="trackNewlySubmitted()" class="w-full py-3.5 rounded-xl bg-[#5b3fa6] text-white font-bold text-sm shadow-md hover:bg-[#3d2876] transition flex items-center justify-center gap-2">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <span>Track this Complaint Now</span>
+            </button>
+            <button onclick="fileAnother()" class="w-full py-3 rounded-xl border border-slate-200 text-slate-700 font-bold text-sm hover:bg-slate-50 transition">
+              File Another Complaint
+            </button>
+            <button onclick="goHome()" class="w-full py-2 text-xs text-slate-400 hover:text-slate-600 font-semibold">
+              Return to Citizen Lobby
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== 3. COMPLAINT TRACKING PAGE ===================== -->
+  <div id="trackPage" class="hidden min-h-screen hero-bg">
+    <div class="mx-auto max-w-4xl px-5 py-6">
+      <button onclick="goHome()" class="flex items-center gap-2 text-sm font-bold text-purple-700 hover:text-purple-900 mb-6">
+        <i class="fa-solid fa-arrow-left"></i>
+        <span>Back to Citizen Lobby</span>
+      </button>
+
+      <!-- SEARCH VIEW -->
+      <div id="trackSearchView">
+        <div class="mb-8 text-center max-w-xl mx-auto">
+          <div class="mb-4 inline-flex items-center gap-2 rounded-full border border-purple-200 bg-purple-50 px-4 py-2 text-xs font-bold text-purple-700">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            Real-Time Audit Tracker
+          </div>
+          <h2 class="text-3xl font-black text-slate-900">Track your grievance</h2>
+          <p class="mt-2 text-sm text-slate-600">
+            Enter your unique Complaint ID (e.g. <strong class="text-purple-700">SS-100025</strong>) to view the live 4-stage resolution status.
+          </p>
+        </div>
+
+        <div class="max-w-xl mx-auto rounded-3xl border border-purple-100 bg-white p-8 shadow-xl">
+          <form onsubmit="trackComplaint(event)" class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-2">Enter Complaint ID</label>
+              <div class="flex gap-2">
+                <input id="trackId" type="text" required placeholder="SS-100025" class="flex-1 rounded-xl border border-slate-200 px-4 py-3.5 text-base font-bold tracking-wider text-slate-900 outline-none focus:border-purple-600 focus:ring-4 focus:ring-purple-100 uppercase" />
+                <button type="submit" class="px-6 rounded-xl bg-[#5b3fa6] text-white font-bold text-sm shadow-md hover:bg-[#3d2876] transition flex items-center gap-2">
+                  <i class="fa-solid fa-search"></i>
+                  <span>Track</span>
+                </button>
+              </div>
+            </div>
+            <div id="trackError" class="hidden text-xs font-bold text-rose-600 bg-rose-50 p-3 rounded-xl border border-rose-200">
+              Complaint ID was not found.
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- TRACKING RESULT VIEW (4-STAGE STEPPER) -->
+      <div id="trackResultView" class="hidden space-y-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <span class="text-xs text-slate-400 font-semibold uppercase">Tracking Complaint</span>
+            <h2 class="text-3xl font-black text-slate-900" id="resultId">SS-100025</h2>
+          </div>
+          <span id="resultStatusBadge" class="rounded-full px-4 py-2 text-xs font-bold bg-amber-50 text-amber-700">
+            In Progress
+          </span>
+        </div>
+
+        <!-- Stepper Card -->
+        <div class="rounded-3xl border border-purple-100 bg-white p-8 shadow-lg">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-6">Resolution Progress</h3>
+          <div class="flex flex-col sm:flex-row gap-6 sm:gap-0 justify-between items-start" id="stepper">
+            <!-- Stepper stages rendered by JS -->
+          </div>
+        </div>
+
+        <!-- Details Card -->
+        <div class="grid gap-6 sm:grid-cols-2">
+          <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Grievance Info</h4>
+            <div>
+              <span class="text-xs text-slate-400 block">Category</span>
+              <strong class="text-base text-slate-900" id="resultCategory">Roads &amp; Potholes</strong>
+            </div>
+            <div>
+              <span class="text-xs text-slate-400 block">Locality &amp; Landmark</span>
+              <strong class="text-sm text-slate-900" id="resultLocality">MG Road Junction, Ward 12</strong>
+            </div>
+            <div>
+              <span class="text-xs text-slate-400 block">Filed Date</span>
+              <span class="text-xs text-slate-700 font-semibold" id="resultDate">Aug 28, 2026</span>
+            </div>
+          </div>
+
+          <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Department Dispatch</h4>
+            <div>
+              <span class="text-xs text-slate-400 block">Assigned Municipal Body</span>
+              <strong class="text-base text-purple-700" id="resultDept">Roads &amp; Infrastructure Dept.</strong>
+            </div>
+            <div class="rounded-xl bg-purple-50 p-3.5 border border-purple-100" id="resultNote">
+              <span class="text-xs text-purple-900 font-semibold leading-relaxed">
+                The concerned team has been notified and is actively working on it.
+              </span>
+            </div>
+            <button onclick="backToSearch()" class="text-xs font-bold text-purple-700 hover:text-purple-900 flex items-center gap-1">
+              <i class="fa-solid fa-arrow-left"></i>
+              <span>Track another complaint</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const categoryLabels = {
+      roads: 'Roads & Potholes',
+      garbage: 'Garbage & Sanitation',
+      water: 'Water Supply',
+      drainage: 'Drainage & Sewage',
+      electricity: 'Streetlights & Electricity',
+      property: 'Damage to Public Property',
+      animals: 'Stray Animals',
+      noise: 'Noise Pollution',
+      other: 'General Civic Issue'
+    };
+
+    const stageDefs = [
+      { key: 'submitted', label: 'Submitted', icon: 'fa-file-circle-check', desc: 'Complaint logged in DB' },
+      { key: 'assigned', label: 'Verified & Assigned', icon: 'fa-user-check', desc: 'Dispatched to dept' },
+      { key: 'progress', label: 'In Progress', icon: 'fa-person-digging', desc: 'Field team active' },
+      { key: 'resolved', label: 'Resolved', icon: 'fa-circle-check', desc: 'Marked completed' }
+    ];
+
+    let lastFiledComplaintId = 'SS-100025';
+
+    function checkCitizenAuth() {
+      const token = localStorage.getItem('sevaSetuToken');
+      const userJson = localStorage.getItem('sevaSetuUser');
+      if (token && userJson) {
+        try {
+          const user = JSON.parse(userJson);
+          const nameDisp = document.getElementById('userNameDisplay');
+          if (nameDisp && user.name) nameDisp.textContent = user.name;
+          const userBadge = document.getElementById('userProfileBadge');
+          if (userBadge) userBadge.classList.remove('hidden');
+          const nameInput = document.getElementById('fullName');
+          const phoneInput = document.getElementById('phone');
+          if (nameInput && !nameInput.value) nameInput.value = user.name || '';
+          if (phoneInput && !phoneInput.value) phoneInput.value = user.phone || '';
+        } catch (e) {}
+      }
+    }
+    checkCitizenAuth();
+
+    function logoutCitizen() {
+      localStorage.removeItem('sevaSetuToken');
+      localStorage.removeItem('sevaSetuUser');
+      window.location.href = '/login?role=citizen';
+    }
+
+    function openPortal(mode) {
+      document.getElementById('landingPage').classList.add('hidden');
+      if (mode === 'submit') {
+        document.getElementById('trackPage').classList.add('hidden');
+        document.getElementById('complaintPage').classList.remove('hidden');
+        document.getElementById('complaintFormView').classList.remove('hidden');
+        document.getElementById('complaintSuccessView').classList.add('hidden');
+      } else if (mode === 'track') {
+        document.getElementById('complaintPage').classList.add('hidden');
+        document.getElementById('trackPage').classList.remove('hidden');
+        document.getElementById('trackSearchView').classList.remove('hidden');
+        document.getElementById('trackResultView').classList.add('hidden');
+        document.getElementById('trackError').classList.add('hidden');
+      }
+      window.scrollTo(0, 0);
+    }
+
+    function goHome() {
+      document.getElementById('complaintPage').classList.add('hidden');
+      document.getElementById('trackPage').classList.add('hidden');
+      document.getElementById('landingPage').classList.remove('hidden');
+      window.scrollTo(0, 0);
+    }
+
+    function backToSearch() {
+      document.getElementById('trackResultView').classList.add('hidden');
+      document.getElementById('trackSearchView').classList.remove('hidden');
+      document.getElementById('trackId').value = '';
+      window.scrollTo(0, 0);
+    }
+
+    function trackNewlySubmitted() {
+      openPortal('track');
+      document.getElementById('trackId').value = lastFiledComplaintId;
+      trackComplaintWithId(lastFiledComplaintId);
+    }
+
+    function quickTrack(cid) {
+      openPortal('track');
+      document.getElementById('trackId').value = cid;
+      trackComplaintWithId(cid);
+    }
+
+    function renderStepper(currentIndex) {
+      const stepper = document.getElementById('stepper');
+      stepper.innerHTML = '';
+
+      stageDefs.forEach((stage, i) => {
+        const isDone = i < currentIndex;
+        const isCurrent = i === currentIndex;
+        const circleClasses = isDone
+          ? 'bg-emerald-500 text-white'
+          : isCurrent
+          ? 'bg-[#5b3fa6] text-white ring-4 ring-purple-100'
+          : 'bg-slate-100 text-slate-400';
+        const textClasses = isDone || isCurrent ? 'text-slate-900 font-bold' : 'text-slate-400';
+
+        const wrap = document.createElement('div');
+        wrap.className = 'relative flex flex-1 flex-col items-start sm:items-center sm:text-center';
+
+        wrap.innerHTML = `
+          ${i < stageDefs.length - 1 ? `
+            <div class="hidden sm:block absolute left-1/2 top-5 h-0.5 w-full ${isDone ? 'bg-emerald-400' : 'bg-slate-200'}"></div>
+          ` : ''}
+          <div class="relative z-10 flex items-center gap-3 sm:flex-col sm:gap-2">
+            <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full ${circleClasses}">
+              <i class="fa-solid ${isDone ? 'fa-check' : stage.icon} text-sm"></i>
+            </div>
+            <div class="sm:mt-1">
+              <p class="text-sm ${textClasses}">${stage.label}</p>
+              <p class="text-xs text-slate-400">${stage.desc}</p>
+            </div>
+          </div>
+        `;
+        stepper.appendChild(wrap);
+      });
+    }
+
+    async function trackComplaintWithId(rawId) {
+      const errorEl = document.getElementById('trackError');
+      errorEl.classList.add('hidden');
+
+      try {
+        const res = await fetch(`/api/v1/complaints/track/${encodeURIComponent(rawId)}`);
+        if (!res.ok) {
+          errorEl.textContent = `Complaint ID "${rawId}" was not found in the database.`;
+          errorEl.classList.remove('hidden');
+          return;
+        }
+
+        const data = await res.json();
+        document.getElementById('resultId').textContent = data.complaint_id;
+        document.getElementById('resultCategory').textContent = data.category_name;
+        document.getElementById('resultLocality').textContent = data.locality + (data.landmark ? ' (' + data.landmark + ')' : '');
+        document.getElementById('resultDate').textContent = data.filed_date;
+        document.getElementById('resultDept').textContent = data.department_name;
+        document.getElementById('resultNote').querySelector('span').textContent = data.status_note;
+
+        const badge = document.getElementById('resultStatusBadge');
+        const badgeStyles = [
+          'bg-slate-100 text-slate-600',
+          'bg-blue-50 text-blue-700',
+          'bg-amber-50 text-amber-700',
+          'bg-emerald-50 text-emerald-700'
+        ];
+        badge.className = 'rounded-full px-4 py-2 text-xs font-bold ' + (badgeStyles[data.stage_index] || badgeStyles[0]);
+        badge.textContent = data.stage_label;
+
+        renderStepper(data.stage_index);
+
+        document.getElementById('trackSearchView').classList.add('hidden');
+        document.getElementById('trackResultView').classList.remove('hidden');
+        window.scrollTo(0, 0);
+      } catch (err) {
+        errorEl.textContent = 'Could not connect to database server. Please try again.';
+        errorEl.classList.remove('hidden');
+      }
+    }
+
+    function trackComplaint(event) {
+      event.preventDefault();
+      const rawId = document.getElementById('trackId').value.trim().toUpperCase();
+      if (!rawId) return;
+      trackComplaintWithId(rawId);
+    }
+
+    function fileAnother() {
+      document.getElementById('complaintForm').reset();
+      document.getElementById('complaintSuccessView').classList.add('hidden');
+      document.getElementById('complaintFormView').classList.remove('hidden');
+      window.scrollTo(0, 0);
+    }
+
+    function toggleContact() {
+      const anon = document.getElementById('anonymous').checked;
+      document.getElementById('contactFields').classList.toggle('hidden', anon);
+    }
+
+    async function submitComplaint(event) {
+      event.preventDefault();
+
+      const submitBtn = event.target.querySelector('button[type="submit"]');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Normalizing & Saving...';
+      }
+
+      const category = document.getElementById('category').value;
+      const description = document.getElementById('description').value;
+      const locality = document.getElementById('locality').value;
+      const ward = document.getElementById('ward').value;
+      const landmark = document.getElementById('landmark').value;
+      const priority = document.querySelector('input[name="priority"]:checked')?.value || 'medium';
+      const is_anonymous = document.getElementById('anonymous').checked;
+      const full_name = is_anonymous ? null : document.getElementById('fullName').value;
+      const phone = is_anonymous ? null : document.getElementById('phone').value;
+
+      const payload = { category, description, locality, ward, landmark, priority, is_anonymous, full_name, phone };
+
+      const token = localStorage.getItem('sevaSetuToken');
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      try {
+        const res = await fetch('/api/v1/complaints', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          alert('Submission failed: ' + (data.detail || 'Database error'));
+          return;
+        }
+
+        lastFiledComplaintId = data.complaint_id;
+        document.getElementById('complaintId').textContent = data.complaint_id;
+        document.getElementById('aiClassification').textContent =
+          'AI classified this as "' + (data.category_name || categoryLabels[category] || 'General Civic Issue') + '"' +
+          (data.is_duplicate ? ' (Linked to existing active cluster)' : '');
+
+        document.getElementById('complaintFormView').classList.add('hidden');
+        document.getElementById('complaintSuccessView').classList.remove('hidden');
+        window.scrollTo(0, 0);
+      } catch (err) {
+        alert('Error connecting to backend database.');
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Submit Complaint';
+        }
+      }
+    }
+
+    // Populate overview & quick tracker feed
+    async function initLobbyData() {
+      try {
+        const res = await fetch('/api/v1/authority/analytics/overview');
+        if (res.ok) {
+          const k = await res.json();
+          document.getElementById('hubTotalCount').textContent = k.total_complaints;
+          document.getElementById('hubResolvedCount').textContent = k.resolved_complaints;
+          document.getElementById('hubProgressCount').textContent = k.in_progress_complaints;
+          document.getElementById('hubMergedCount').textContent = k.complaints_merged_today;
+        }
+
+        const mapRes = await fetch('/api/v1/authority/complaints/map');
+        if (mapRes.ok) {
+          const mapData = await mapRes.json();
+          const sample = (mapData.complaints || []).slice(0, 6);
+          const container = document.getElementById('sampleTrackerCards');
+          container.innerHTML = sample.map(c => `
+            <div onclick="quickTrack('${c.complaint_id}')" class="cursor-pointer rounded-xl border border-slate-200 bg-slate-50/70 p-3 hover:border-purple-300 hover:bg-purple-50/40 transition">
+              <div class="flex justify-between items-center mb-1">
+                <span class="text-xs font-bold text-purple-700">${c.complaint_id}</span>
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${c.status === 'RESOLVED' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${c.status}</span>
+              </div>
+              <p class="text-xs text-slate-800 font-semibold truncate">${c.text}</p>
+              <p class="text-[11px] text-slate-400 mt-1">${c.locality || 'Mumbai'}</p>
+            </div>
+          `).join('');
+        }
+      } catch(e) {}
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const mode = urlParams.get('mode') || urlParams.get('action');
+      const trackId = urlParams.get('track_id') || urlParams.get('id');
+
+      if (trackId) {
+        openPortal('track');
+        document.getElementById('trackId').value = trackId;
+        trackComplaintWithId(trackId);
+      } else if (mode === 'submit') {
+        openPortal('submit');
+      } else if (mode === 'track') {
+        openPortal('track');
+      }
+    }
+    initLobbyData();
+  </script>
+</body>
+</html>

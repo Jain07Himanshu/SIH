@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    container_name: grievance-similarity-engine
+    ports:
+      - "8000:8000"
+    environment:
+      - ENGINE_ENVIRONMENT=production
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/grievance_db
+      - EMBEDDING_PROVIDER=fallback
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./configs:/app/configs:ro
+
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: grievance-pgvector-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: grievance_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d grievance_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:

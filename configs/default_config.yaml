@@ -1,0 +1,56 @@
+clustering:
+  algorithm: hdbscan
+  cluster_selection_epsilon: 0.58
+  metric: precomputed
+  min_cluster_size: 2
+  min_samples: 1
+database:
+  echo: false
+  max_overflow: 20
+  pool_size: 10
+  url: sqlite:///./similarity_engine.db
+embedding:
+  batch_size: 64
+  cache_size: 10000
+  dimension: 384
+  model_name: sentence-transformers/all-MiniLM-L6-v2
+  normalize_embeddings: true
+  provider: auto
+engine:
+  environment: development
+  mode: hybrid
+  name: GrievanceSimilarityEngine
+  version: 1.0.0
+paths:
+  synonyms_file: configs/synonyms.yaml
+  taxonomy_file: configs/taxonomy.yaml
+processing:
+  batch_size: 128
+  enable_multilingual: true
+  log_level: INFO
+  max_workers: 4
+retrieval:
+  min_initial_score: 0.3
+  prefilter_by_category: false
+  prefilter_by_geo_radius_km: null
+  top_k: 25
+similarity:
+  geographic:
+    decay_function: gaussian
+    max_distance_meters: 5000.0
+    sigma_meters: 800.0
+  temporal:
+    decay_function: exponential
+    half_life_days: 14.0
+    max_days: 90.0
+  weights:
+    category: 0.1
+    geographic: 0.1
+    keyword: 0.15
+    lexical: 0.15
+    semantic: 0.45
+    temporal: 0.05
+thresholds:
+  duplicate: 0.8
+  needs_review_margin: 0.05
+  possible_match: 0.55

@@ -1,0 +1,202 @@
+version: "1.0.0"
+
+departments:
+  - id: "ROADS_DEPT"
+    name: "Roads and Infrastructure Department"
+    code: "ROADS"
+  - id: "WATER_DEPT"
+    name: "Water Supply and Sewerage Board"
+    code: "WATER"
+  - id: "SANITATION_DEPT"
+    name: "Solid Waste Management and Sanitation Department"
+    code: "SWM"
+  - id: "ELECTRICAL_DEPT"
+    name: "Electricity and Street Lighting Department"
+    code: "ELEC"
+  - id: "DRAINAGE_DEPT"
+    name: "Storm Water Drainage and Flood Control"
+    code: "DRAIN"
+  - id: "TRAFFIC_DEPT"
+    name: "Traffic and Transport Management"
+    code: "TRAFFIC"
+  - id: "HEALTH_DEPT"
+    name: "Public Health and Pest Control"
+    code: "HEALTH"
+  - id: "GARDENS_DEPT"
+    name: "Parks and Horticulture Department"
+    code: "PARKS"
+  - id: "GENERAL_DEPT"
+    name: "General Public Grievance Cell"
+    code: "GENERAL"
+
+categories:
+  - id: "ROAD_POTHOLE"
+    name: "Road / Pothole and Surface Damage"
+    parent_category: "ROADS"
+    department_id: "ROADS_DEPT"
+    priority_default: "MEDIUM"
+    keywords:
+      - pothole
+      - road damage
+      - broken road
+      - crater
+      - road cave in
+      - road resurfacing
+      - road repair
+      - uneven road
+      - tar damage
+      - asphalt broken
+    prototypes:
+      - "Large pothole on the main road causing accidents and traffic jam"
+      - "Damaged broken road with craters and uneven surface needing repair"
+      - "Asphalt washed away creating dangerous road holes for vehicles"
+
+  - id: "WATER_SUPPLY"
+    name: "Water Supply Shortage and Pipeline Leakage"
+    parent_category: "WATER"
+    department_id: "WATER_DEPT"
+    priority_default: "HIGH"
+    keywords:
+      - water supply
+      - no water
+      - water leakage
+      - pipe burst
+      - low water pressure
+      - contaminated water
+      - dirty drinking water
+      - water tanker
+      - pipeline broken
+    prototypes:
+      - "No water supply in our locality for the past two days"
+      - "Drinking water pipeline burst on the street causing massive water wastage"
+      - "Tap water is dirty brown and contaminated with foul smell"
+
+  - id: "SANITATION_GARBAGE"
+    name: "Garbage Disposal and Waste Accumulation"
+    parent_category: "SANITATION"
+    department_id: "SANITATION_DEPT"
+    priority_default: "MEDIUM"
+    keywords:
+      - garbage
+      - waste accumulation
+      - trash
+      - rubbish
+      - dustbin overflow
+      - garbage truck
+      - open dumping
+      - foul smell
+      - dead animal
+      - waste pickup
+    prototypes:
+      - "Garbage not collected for five days and dustbin is overflowing on street"
+      - "Illegal open dumping of trash creating foul odor and health hazard"
+      - "Waste collection truck has not arrived in our area this week"
+
+  - id: "STREET_LIGHT"
+    name: "Street Light Failure and Dark Spots"
+    parent_category: "ELECTRICAL"
+    department_id: "ELECTRICAL_DEPT"
+    priority_default: "MEDIUM"
+    keywords:
+      - street light
+      - lamp post
+      - pole light
+      - dark street
+      - blinking light
+      - street light off
+      - streetlight not working
+      - broken lamp
+      - wire hanging
+    prototypes:
+      - "Street lights on the main road are not functioning causing total darkness at night"
+      - "Lamp post light has been off for a week making the street unsafe"
+      - "Electric pole bulb is blinking and faulty outside residential society"
+
+  - id: "DRAINAGE_SEWAGE"
+    name: "Drainage Overflow and Sewage Blockage"
+    parent_category: "DRAINAGE"
+    department_id: "DRAINAGE_DEPT"
+    priority_default: "HIGH"
+    keywords:
+      - drainage
+      - sewage
+      - gutter overflow
+      - sewer blockage
+      - clogged drain
+      - manhole open
+      - storm drain
+      - dirty drain water
+      - waterlogging
+    prototypes:
+      - "Drainage gutter is overflowing on the road with dirty sewage water"
+      - "Sewer line is completely blocked causing foul water backflow into homes"
+      - "Open manhole cover on footpath poses severe risk to pedestrians"
+
+  - id: "TRAFFIC_CONGESTION"
+    name: "Traffic Signal and Illegal Parking"
+    parent_category: "TRAFFIC"
+    department_id: "TRAFFIC_DEPT"
+    priority_default: "LOW"
+    keywords:
+      - traffic signal
+      - traffic light
+      - illegal parking
+      - vehicle encroachment
+      - road obstruction
+      - traffic jam
+      - signal not working
+      - no parking violation
+    prototypes:
+      - "Traffic signal at the crossroad is not working causing major vehicle congestion"
+      - "Illegal vehicle parking on both sides of the narrow road blocks movement"
+      - "Footpath encroachment by unauthorized vehicles prevents pedestrian walking"
+
+  - id: "ELECTRICITY_OUTAGE"
+    name: "Power Outage and Transformer Fault"
+    parent_category: "ELECTRICAL"
+    department_id: "ELECTRICAL_DEPT"
+    priority_default: "HIGH"
+    keywords:
+      - power cut
+      - electricity outage
+      - transformer spark
+      - voltage fluctuation
+      - power failure
+      - loose wire
+      - electric short circuit
+    prototypes:
+      - "Frequent power cuts and blackout in our sector without prior notice"
+      - "Transformer is sparking with loud noise and sparks near houses"
+      - "High voltage fluctuation damaged home appliances in the building"
+
+  - id: "PUBLIC_INFRASTRUCTURE"
+    name: "Footpath, Park and Public Property Damage"
+    parent_category: "CIVIC"
+    department_id: "GARDENS_DEPT"
+    priority_default: "LOW"
+    keywords:
+      - footpath broken
+      - park bench
+      - tree fallen
+      - public toilet
+      - bus shelter
+      - garden maintenance
+      - divider broken
+    prototypes:
+      - "Fallen tree branch blocking the public road and pedestrian walkway"
+      - "Broken footpath pavers causing elderly citizens to trip and fall"
+      - "Public garden benches and children swings are broken and vandalized"
+
+  - id: "OTHER_GENERAL"
+    name: "Other Civic Grievances"
+    parent_category: "GENERAL"
+    department_id: "GENERAL_DEPT"
+    priority_default: "LOW"
+    keywords:
+      - general complaint
+      - noise pollution
+      - stray animals
+      - civic issue
+      - illegal construction
+    prototypes:
+      - "Unclassified general municipal complaint regarding civic amenities"

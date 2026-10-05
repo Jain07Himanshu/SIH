@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Duplicate Cluster Detection · Seva Setu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --violet-950:#241a3d;
+    --violet-800:#3d2876;
+    --violet-600:#5b3fa6;
+    --violet-400:#8a72c9;
+    --violet-100:#ece7f8;
+    --violet-050:#f6f4fc;
+    --cyan-600:#0c8f9c;
+    --cyan-500:#0fa3b1;
+    --cyan-100:#dbf3f5;
+    --ink-900:#201a2b;
+    --ink-600:#5a5468;
+    --ink-400:#8b8496;
+    --line:#e6e1f0;
+    --bg:#f7f5fb;
+    --white:#ffffff;
+    --wet:#3f9660;
+    --dry:#c98a2b;
+    --hazard:#c9463f;
+    --road:#5b3fa6;
+    --water:#2b79c9;
+    --light:#c9962b;
+    --radius-card:18px;
+    --radius-pill:999px;
+    --radius-sm:10px;
+    --shadow-card:0 1px 2px rgba(36,26,61,0.04), 0 8px 24px -12px rgba(36,26,61,0.12);
+    --shadow-pop:0 12px 40px -8px rgba(36,26,61,0.28);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink-900);
+    font-family:'Inter',sans-serif;
+    font-feature-settings:"tnum" 1;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  h1,h2,h3,.display{font-family:'Sora',sans-serif;}
+
+  a{color:inherit;}
+  button{font-family:inherit;cursor:pointer;}
+  :focus-visible{outline:2.5px solid var(--cyan-600);outline-offset:2px;}
+
+  .shell{
+    max-width:1360px;
+    margin:0 auto;
+    padding:0 40px 64px;
+  }
+
+  /* ---------- Brand bar ---------- */
+  .brand-bar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:20px 40px;
+    border-bottom:1px solid var(--line);
+    margin-bottom:32px;
+    background:var(--white);
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .brand-mark{
+    width:34px; height:34px;
+    border-radius:10px;
+    background:linear-gradient(135deg, var(--violet-600), var(--violet-800));
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .brand-name{
+    font-family:'Sora',sans-serif;
+    font-size:18px;
+    font-weight:700;
+    color:var(--violet-950);
+    letter-spacing:-0.01em;
+  }
+  .brand-crumb{
+    font-size:13px;
+    color:var(--ink-400);
+    font-weight:500;
+  }
+  .brand-crumb span{color:var(--violet-600); font-weight:600;}
+
+  /* ---------- Header ---------- */
+  .page-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:24px;
+    margin-bottom:28px;
+  }
+  .page-header h1{
+    font-size:30px;
+    font-weight:700;
+    letter-spacing:-0.01em;
+    color:var(--violet-950);
+    margin:0 0 6px;
+  }
+  .page-header p{
+    margin:0;
+    color:var(--ink-600);
+    font-size:15px;
+  }
+  .ai-badge{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    background:linear-gradient(135deg, var(--violet-600), var(--violet-800));
+    color:#fff;
+    padding:9px 16px 9px 14px;
+    border-radius:var(--radius-pill);
+    font-size:13.5px;
+    font-weight:600;
+    white-space:nowrap;
+    box-shadow:0 6px 18px -6px rgba(91,63,166,0.55);
+  }
+  .ai-badge .count{
+    background:rgba(255,255,255,0.22);
+    padding:2px 9px;
+    border-radius:var(--radius-pill);
+    font-variant-numeric:tabular-nums;
+  }
+
+  /* ---------- KPI strip ---------- */
+  .kpi-strip{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:16px;
+    margin-bottom:24px;
+  }
+  .kpi-card{
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:var(--radius-card);
+    padding:20px 22px;
+    box-shadow:var(--shadow-card);
+  }
+  .kpi-card .label{
+    font-size:12.5px;
+    color:var(--ink-400);
+    font-weight:600;
+    margin-bottom:10px;
+  }
+  .kpi-card .value{
+    font-family:'Sora',sans-serif;
+    font-size:28px;
+    font-weight:700;
+    color:var(--violet-800);
+    display:flex;
+    align-items:baseline;
+    gap:8px;
+  }
+  .kpi-card .value small{
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    font-weight:500;
+    color:var(--ink-400);
+  }
+  .kpi-card.merged .trend{
+    font-size:13px;
+    font-weight:600;
+    color:var(--wet);
+    display:inline-flex;
+    align-items:center;
+    gap:3px;
+  }
+  .kpi-card.noise{
+    background:linear-gradient(160deg, var(--cyan-500), var(--cyan-600));
+    border:none;
+  }
+  .kpi-card.noise .label{color:rgba(255,255,255,0.75);}
+  .kpi-card.noise .value{color:#fff; font-size:22px; line-height:1.3;}
+
+  /* ---------- Main grid ---------- */
+  .main-grid{
+    display:grid;
+    grid-template-columns:1.55fr 1fr;
+    gap:20px;
+    align-items:start;
+  }
+
+  /* ---------- Map panel ---------- */
+  .map-panel{
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:var(--radius-card);
+    box-shadow:var(--shadow-card);
+    overflow:hidden;
+  }
+  .map-panel .panel-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:18px 20px 0;
+  }
+  .panel-head h2{
+    font-size:16px;
+    font-weight:600;
+    margin:0;
+    color:var(--violet-950);
+  }
+  .view-toggle{
+    display:flex;
+    background:var(--violet-050);
+    border-radius:var(--radius-pill);
+    padding:3px;
+    gap:2px;
+  }
+  .view-toggle button{
+    border:none;
+    background:transparent;
+    padding:7px 14px;
+    border-radius:var(--radius-pill);
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--ink-600);
+    transition:background 0.15s ease, color 0.15s ease;
+  }
+  .view-toggle button.active{
+    background:var(--violet-600);
+    color:#fff;
+  }
+
+  .map-stage{
+    position:relative;
+    height:460px;
+    margin:16px 20px 20px;
+    border-radius:var(--radius-sm);
+    background:
+      radial-gradient(ellipse at 30% 20%, rgba(91,63,166,0.10), transparent 55%),
+      linear-gradient(180deg, var(--violet-050) 0%, #efeaf9 100%);
+    overflow:hidden;
+  }
+  .map-stage svg{position:absolute; inset:0; width:100%; height:100%;}
+
+  .bubble{
+    cursor:pointer;
+    transition:transform 0.18s ease, filter 0.18s ease;
+    transform-origin:center;
+    transform-box:fill-box;
+  }
+  .bubble:hover, .bubble:focus{
+    transform:scale(1.08);
+    filter:brightness(1.06);
+  }
+
+  .tooltip{
+    position:absolute;
+    pointer-events:none;
+    background:var(--ink-900);
+    color:#fff;
+    padding:10px 13px;
+    border-radius:11px;
+    font-size:12.5px;
+    line-height:1.45;
+    max-width:200px;
+    box-shadow:var(--shadow-pop);
+    opacity:0;
+    transform:translateY(4px);
+    transition:opacity 0.12s ease, transform 0.12s ease;
+    z-index:5;
+  }
+  .tooltip.visible{opacity:1; transform:translateY(0);}
+  .tooltip .t-title{font-weight:600; margin-bottom:3px;}
+  .tooltip .t-meta{color:rgba(255,255,255,0.65);}
+
+  .map-legend{
+    display:flex;
+    flex-wrap:wrap;
+    gap:14px;
+    padding:0 20px 18px;
+  }
+  .legend-item{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-size:12px;
+    color:var(--ink-600);
+  }
+  .legend-dot{width:9px; height:9px; border-radius:50%;}
+
+  /* ---------- Cluster list panel ---------- */
+  .list-panel{
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:var(--radius-card);
+    box-shadow:var(--shadow-card);
+    display:flex;
+    flex-direction:column;
+    max-height:592px;
+  }
+  .list-panel .panel-head{
+    padding:18px 20px 14px;
+    border-bottom:1px solid var(--line);
+  }
+  .cluster-scroll{
+    overflow-y:auto;
+    padding:12px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .cluster-scroll::-webkit-scrollbar{width:6px;}
+  .cluster-scroll::-webkit-scrollbar-thumb{background:var(--violet-100); border-radius:99px;}
+
+  .cluster-card{
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:14px 15px;
+    background:var(--white);
+    transition:border-color 0.15s ease, box-shadow 0.15s ease;
+    cursor:pointer;
+  }
+  .cluster-card:hover{
+    border-color:var(--violet-400);
+    box-shadow:0 6px 18px -10px rgba(91,63,166,0.35);
+  }
+  .cluster-card .row-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:10px;
+    margin-bottom:9px;
+  }
+  .cat-pill{
+    display:inline-block;
+    font-size:11px;
+    font-weight:700;
+    padding:4px 9px;
+    border-radius:var(--radius-pill);
+    color:#fff;
+  }
+  .ring{
+    position:relative;
+    width:38px; height:38px;
+    flex-shrink:0;
+  }
+  .ring svg{transform:rotate(-90deg);}
+  .ring .pct{
+    position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    font-size:9.5px; font-weight:700; color:var(--violet-800);
+  }
+  .cluster-card h3{
+    font-size:14.5px;
+    font-weight:600;
+    margin:0 0 4px;
+    color:var(--ink-900);
+    line-height:1.35;
+  }
+  .cluster-card .sub{
+    font-size:12px;
+    color:var(--ink-400);
+    margin:0 0 10px;
+  }
+  .row-bottom{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+  .avatars{display:flex;}
+  .avatars span{
+    width:24px; height:24px;
+    border-radius:50%;
+    border:2px solid #fff;
+    margin-left:-8px;
+    font-size:9.5px;
+    font-weight:700;
+    color:#fff;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .avatars span:first-child{margin-left:0;}
+  .avatars .more{background:var(--ink-400);}
+
+  .status-badge{
+    font-size:10.5px;
+    font-weight:700;
+    padding:4px 9px;
+    border-radius:var(--radius-pill);
+  }
+  .status-new{background:var(--cyan-100); color:var(--cyan-600);}
+  .status-review{background:#fdf1dc; color:#a8701c;}
+  .status-merged{background:var(--violet-100); color:var(--violet-600);}
+  .status-dispatched{background:#e4f4e9; color:var(--wet);}
+
+  .review-btn{
+    width:100%;
+    margin-top:11px;
+    border:1.5px solid var(--violet-600);
+    color:var(--violet-600);
+    background:transparent;
+    padding:8px 0;
+    border-radius:var(--radius-pill);
+    font-size:12.5px;
+    font-weight:700;
+    transition:background 0.15s ease, color 0.15s ease;
+  }
+  .review-btn:hover{background:var(--violet-600); color:#fff;}
+
+  /* ---------- Drawer ---------- */
+  .scrim{
+    position:fixed; inset:0;
+    background:rgba(32,26,43,0.42);
+    opacity:0; pointer-events:none;
+    transition:opacity 0.25s ease;
+    z-index:20;
+  }
+  .scrim.open{opacity:1; pointer-events:auto;}
+
+  .drawer{
+    position:fixed;
+    top:0; right:0;
+    height:100vh;
+    width:min(480px, 92vw);
+    background:var(--white);
+    box-shadow:-20px 0 50px -10px rgba(36,26,61,0.35);
+    transform:translateX(100%);
+    transition:transform 0.28s cubic-bezier(.32,.72,0,1);
+    z-index:21;
+    display:flex;
+    flex-direction:column;
+  }
+  .drawer.open{transform:translateX(0);}
+
+  .drawer-head{
+    padding:22px 24px 18px;
+    border-bottom:1px solid var(--line);
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:14px;
+  }
+  .drawer-head h2{
+    font-size:18px;
+    margin:0 0 6px;
+    color:var(--violet-950);
+    line-height:1.3;
+  }
+  .close-btn{
+    border:none;
+    background:var(--violet-050);
+    width:32px; height:32px;
+    border-radius:50%;
+    font-size:16px;
+    color:var(--ink-600);
+    flex-shrink:0;
+  }
+  .close-btn:hover{background:var(--violet-100);}
+
+  .drawer-body{
+    overflow-y:auto;
+    padding:20px 24px 100px;
+    flex:1;
+  }
+  .drawer-section{margin-bottom:26px;}
+  .drawer-section h3{
+    font-size:12.5px;
+    text-transform:none;
+    color:var(--ink-400);
+    font-weight:700;
+    margin:0 0 12px;
+  }
+
+  .sig-chip{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-size:11.5px;
+    font-weight:600;
+    padding:6px 11px;
+    border-radius:var(--radius-pill);
+    margin:0 6px 6px 0;
+  }
+  .sig-hotspot{background:#fdece9; color:var(--hazard);}
+  .sig-trend{background:var(--violet-100); color:var(--violet-600);}
+  .sig-workload{background:var(--cyan-100); color:var(--cyan-600);}
+
+  .sim-row{margin-bottom:12px;}
+  .sim-row .sim-label{
+    display:flex;
+    justify-content:space-between;
+    font-size:12.5px;
+    color:var(--ink-600);
+    margin-bottom:5px;
+  }
+  .sim-track{
+    height:6px;
+    background:var(--violet-050);
+    border-radius:99px;
+    overflow:hidden;
+  }
+  .sim-fill{height:100%; border-radius:99px; background:var(--violet-600);}
+
+  .complaint-item{
+    display:flex;
+    gap:12px;
+    padding:12px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .complaint-item:last-child{border-bottom:none;}
+  .thumb{
+    width:52px; height:52px;
+    border-radius:9px;
+    flex-shrink:0;
+    background:linear-gradient(135deg,var(--violet-100),var(--cyan-100));
+  }
+  .complaint-item .meta{
+    font-size:11px;
+    color:var(--ink-400);
+    margin-bottom:3px;
+  }
+  .complaint-item .snippet{
+    font-size:13px;
+    color:var(--ink-900);
+    line-height:1.4;
+  }
+
+  .drawer-actions{
+    position:sticky;
+    bottom:0;
+    background:var(--white);
+    border-top:1px solid var(--line);
+    padding:16px 24px;
+    display:flex;
+    gap:10px;
+  }
+  .btn-primary{
+    flex:1;
+    border:none;
+    background:var(--violet-600);
+    color:#fff;
+    padding:13px 16px;
+    border-radius:var(--radius-pill);
+    font-size:13.5px;
+    font-weight:700;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    transition:background 0.15s ease;
+  }
+  .btn-primary:hover{background:var(--violet-800);}
+  .btn-ghost{
+    border:1.5px solid var(--line);
+    background:transparent;
+    color:var(--ink-600);
+    padding:13px 16px;
+    border-radius:var(--radius-pill);
+    font-size:13.5px;
+    font-weight:600;
+  }
+  .btn-ghost:hover{border-color:var(--ink-400); color:var(--ink-900);}
+
+  /* ---------- Bottom ribbon ---------- */
+  .ribbon{
+    margin-top:24px;
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:var(--radius-card);
+    box-shadow:var(--shadow-card);
+    padding:26px 30px;
+  }
+  .ribbon h2{
+    font-size:15px;
+    color:var(--violet-600);
+    font-weight:700;
+    margin:0 0 20px;
+  }
+  .ribbon-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:22px;
+  }
+  .ribbon-item{display:flex; gap:14px; align-items:flex-start;}
+  .ribbon-icon{
+    width:42px; height:42px;
+    border-radius:12px;
+    background:var(--violet-050);
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .ribbon-item h4{
+    font-size:14px;
+    margin:0 0 3px;
+    color:var(--ink-900);
+    font-weight:600;
+  }
+  .ribbon-item p{
+    font-size:12.5px;
+    color:var(--ink-600);
+    margin:0;
+    line-height:1.45;
+  }
+
+  @media (max-width: 1080px){
+    .main-grid{grid-template-columns:1fr;}
+    .kpi-strip{grid-template-columns:repeat(2,1fr);}
+    .ribbon-grid{grid-template-columns:1fr;}
+  }
+  @media (max-width: 620px){
+    .shell{padding:22px 16px 48px;}
+    .page-header{flex-direction:column;}
+    .kpi-strip{grid-template-columns:1fr;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important; animation:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<header class="brand-bar">
+  <div class="brand">
+    <div class="brand-mark">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+        <path d="M4 14c3-6 6-9 8-9s5 3 8 9" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+        <path d="M4 14h16" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+        <path d="M6 14v4M18 14v4" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <span class="brand-name">Seva Setu</span>
+  </div>
+  <div class="brand-crumb">Authority console · <span>Duplicate Cluster Detection</span></div>
+</header>
+
+<div class="shell">
+
+  <!-- Header -->
+  <header class="page-header">
+    <div>
+      <h1>Duplicate Cluster Detection</h1>
+      <p>AI-grouped complaints reporting the same underlying issue</p>
+    </div>
+    <div class="ai-badge">🤖 AI-Powered Clustering <span class="count" id="clusterCount">38 active clusters</span></div>
+  </header>
+
+  <!-- KPI Strip -->
+  <section class="kpi-strip">
+    <div class="kpi-card">
+      <div class="label">Active clusters</div>
+      <div class="value">38</div>
+    </div>
+    <div class="kpi-card merged">
+      <div class="label">Complaints merged today</div>
+      <div class="value">146 <span class="trend">↑ 12%</span></div>
+    </div>
+    <div class="kpi-card">
+      <div class="label">Largest cluster</div>
+      <div class="value">47 <small>reports</small></div>
+    </div>
+    <div class="kpi-card noise">
+      <div class="label">Noise reduction</div>
+      <div class="value">Authorities see 62% fewer duplicate tickets</div>
+    </div>
+  </section>
+
+  <!-- Main grid -->
+  <div class="main-grid">
+
+    <!-- Map panel -->
+    <section class="map-panel">
+      <div class="panel-head">
+        <h2>Cluster map</h2>
+        <div class="view-toggle">
+          <a href="duplicate_cluster_map.html" class="active">Map view</a>
+          <a href="duplicate_cluster_network.html">Network graph</a>
+        </div>
+      </div>
+
+      <div class="map-stage" id="mapStage">
+        <!-- Map view -->
+        <svg id="mapView" viewBox="0 0 640 460">
+          <!-- isometric city blocks -->
+          <g opacity="0.5">
+            <polygon points="60,300 120,270 180,300 120,330" fill="#ded4f2"/>
+            <polygon points="60,300 60,260 120,230 120,270" fill="#e9e1f7"/>
+            <polygon points="120,270 120,230 180,260 180,300" fill="#d3c6ef"/>
+
+            <polygon points="440,120 500,90 560,120 500,150" fill="#ded4f2"/>
+            <polygon points="440,120 440,80 500,50 500,90" fill="#e9e1f7"/>
+            <polygon points="500,90 500,50 560,80 560,120" fill="#d3c6ef"/>
+
+            <polygon points="260,380 320,350 380,380 320,410" fill="#ded4f2"/>
+            <polygon points="260,380 260,340 320,310 320,350" fill="#e9e1f7"/>
+            <polygon points="320,350 320,310 380,340 380,380" fill="#d3c6ef"/>
+          </g>
+          <!-- road lines -->
+          <path d="M20,220 C200,180 420,260 620,200" stroke="#d8cdf0" stroke-width="3" fill="none" stroke-dasharray="2 10" stroke-linecap="round"/>
+          <path d="M80,60 C160,180 260,260 200,420" stroke="#d8cdf0" stroke-width="3" fill="none" stroke-dasharray="2 10" stroke-linecap="round"/>
+
+          <!-- bubbles injected by JS -->
+          <g id="bubbleLayer"></g>
+        </svg>
+
+        <div class="tooltip" id="tooltip">
+          <div class="t-title" id="ttTitle"></div>
+          <div class="t-meta" id="ttMeta"></div>
+        </div>
+      </div>
+
+      <div class="map-legend">
+        <span class="legend-item"><span class="legend-dot" style="background:var(--road)"></span>Roads &amp; infra</span>
+        <span class="legend-item"><span class="legend-dot" style="background:var(--water)"></span>Water supply</span>
+        <span class="legend-item"><span class="legend-dot" style="background:var(--wet)"></span>Sanitation</span>
+        <span class="legend-item"><span class="legend-dot" style="background:var(--light)"></span>Streetlights</span>
+        <span class="legend-item"><span class="legend-dot" style="background:var(--hazard)"></span>Hazardous waste</span>
+      </div>
+    </section>
+
+    <!-- List panel -->
+    <section class="list-panel">
+      <div class="panel-head">
+        <h2>Clusters awaiting review</h2>
+      </div>
+      <div class="cluster-scroll" id="clusterList"></div>
+    </section>
+
+  </div>
+
+  <!-- Bottom ribbon -->
+  <section class="ribbon">
+    <h2>How clustering works</h2>
+    <div class="ribbon-grid">
+      <div class="ribbon-item">
+        <div class="ribbon-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12Z" stroke="#5b3fa6" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="#5b3fa6" stroke-width="1.8"/></svg>
+        </div>
+        <div>
+          <h4>Location matching</h4>
+          <p>Groups by proximity</p>
+        </div>
+      </div>
+      <div class="ribbon-item">
+        <div class="ribbon-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 5h11v8H8l-4 3V5Z" stroke="#5b3fa6" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 16h9l3 3v-9h-3" stroke="#5b3fa6" stroke-width="1.8" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <h4>Text similarity</h4>
+          <p>NLP-based keyword match</p>
+        </div>
+      </div>
+      <div class="ribbon-item">
+        <div class="ribbon-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="#5b3fa6" stroke-width="1.8"/><path d="M12 7.5V12l3 2" stroke="#5b3fa6" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </div>
+        <div>
+          <h4>Time correlation</h4>
+          <p>Flags simultaneous reports</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- Drawer -->
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer">
+  <div class="drawer-head">
+    <div>
+      <h2 id="drawerTitle">Pothole reports — MG Road junction</h2>
+      <span class="cat-pill" id="drawerCat" style="background:var(--road)">Roads</span>
+    </div>
+    <button class="close-btn" id="closeDrawer">✕</button>
+  </div>
+  <div class="drawer-body">
+
+    <div class="drawer-section">
+      <h3>Flagged by</h3>
+      <span class="sig-chip sig-hotspot">📍 Geographic hotspot</span>
+      <span class="sig-chip sig-trend">📈 Grievance trend</span>
+      <span class="sig-chip sig-workload">🏢 Department workload</span>
+    </div>
+
+    <div class="drawer-section">
+      <h3>Why these were grouped</h3>
+      <div class="sim-row">
+        <div class="sim-label"><span>Location proximity</span><span>94%</span></div>
+        <div class="sim-track"><div class="sim-fill" style="width:94%"></div></div>
+      </div>
+      <div class="sim-row">
+        <div class="sim-label"><span>Keyword / category match</span><span>88%</span></div>
+        <div class="sim-track"><div class="sim-fill" style="width:88%"></div></div>
+      </div>
+      <div class="sim-row">
+        <div class="sim-label"><span>Time proximity</span><span>76%</span></div>
+        <div class="sim-track"><div class="sim-fill" style="width:76%"></div></div>
+      </div>
+    </div>
+
+    <div class="drawer-section">
+      <h3>Individual complaints (14)</h3>
+      <div id="complaintList"></div>
+    </div>
+
+  </div>
+  <div class="drawer-actions">
+    <button class="btn-primary">✈ Merge &amp; assign to department</button>
+    <button class="btn-ghost">Flag as false match</button>
+  </div>
+</aside>
+
+
+<script>
+  const categoryColor = {
+    "Roads": "var(--road)",
+    "Water": "var(--water)",
+    "Sanitation": "var(--wet)",
+    "Streetlights": "var(--light)",
+    "Hazardous": "var(--hazard)"
+  };
+  const categoryHex = {
+    "Roads": "#5b3fa6",
+    "Water": "#2b79c9",
+    "Sanitation": "#3f9660",
+    "Streetlights": "#c98a2b",
+    "Hazardous": "#c9463f"
+  };
+  const statusClass = {
+    "New": "status-new",
+    "Under Review": "status-review",
+    "Merged": "status-merged",
+    "Dispatched": "status-dispatched"
+  };
+
+  let activeClusters = [];
+
+  async function loadAuthorityData() {
+    try {
+      // 1. Fetch KPIs
+      const kpiRes = await fetch('/api/v1/authority/analytics/overview');
+      if (kpiRes.ok) {
+        const kpis = await kpiRes.json();
+        const activeEl = document.querySelector('.kpi-card:nth-child(1) .value');
+        if (activeEl) activeEl.innerHTML = `${kpis.active_clusters} <small>across wards</small>`;
+        const mergedEl = document.querySelector('.kpi-card:nth-child(2) .value');
+        if (mergedEl) mergedEl.innerHTML = `${kpis.complaints_merged_today} <span class="trend">↑ ${kpis.noise_reduction_pct}%</span>`;
+        const largestEl = document.querySelector('.kpi-card:nth-child(3) .value');
+        if (largestEl) largestEl.innerHTML = `${kpis.largest_cluster} <small>complaints</small>`;
+        const noiseEl = document.querySelector('.kpi-card:nth-child(4) .value');
+        if (noiseEl) noiseEl.innerHTML = `${kpis.noise_reduction_pct}% <span style="font-size:13px;font-weight:500;display:block;margin-top:2px;">faster response</span>`;
+      }
+
+      // 2. Fetch Clusters
+      const cRes = await fetch('/api/v1/authority/clusters');
+      if (cRes.ok) {
+        activeClusters = await cRes.json();
+        renderAllClusters(activeClusters);
+      }
+    } catch (err) {
+      console.error("Error loading authority dashboard data:", err);
+    }
+  }
+
+  function renderAllClusters(clusters) {
+    const nodeLayer = document.getElementById('nodeLayer');
+    const edgeLayer = document.getElementById('edgeLayer');
+    const listEl = document.getElementById('clusterList');
+
+    if (nodeLayer) nodeLayer.innerHTML = '';
+    if (edgeLayer) edgeLayer.innerHTML = '';
+    if (listEl) listEl.innerHTML = '';
+
+    if (!clusters || clusters.length === 0) {
+      if (listEl) listEl.innerHTML = '<div style="padding:20px;color:#888;text-align:center;">No clusters found. Submit new complaints to generate clusters!</div>';
+      return;
+    }
+
+    // Render SVG network graph
+    clusters.forEach(c => {
+      const nodeCount = Math.min(6, Math.max(3, Math.round(c.count / 2)));
+      const nodePositions = [];
+      for (let i = 0; i < nodeCount; i++) {
+        const angle = (i / nodeCount) * Math.PI * 2;
+        const nx = c.x + Math.cos(angle) * 22;
+        const ny = c.y + Math.sin(angle) * 22;
+        nodePositions.push([nx, ny]);
+      }
+      for (let i = 0; i < nodePositions.length; i++) {
+        for (let j = i + 1; j < nodePositions.length; j++) {
+          const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+          line.setAttribute("x1", nodePositions[i][0]);
+          line.setAttribute("y1", nodePositions[i][1]);
+          line.setAttribute("x2", nodePositions[j][0]);
+          line.setAttribute("y2", nodePositions[j][1]);
+          edgeLayer.appendChild(line);
+        }
+      }
+      nodePositions.forEach(([nx, ny]) => {
+        const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        dot.setAttribute("cx", nx);
+        dot.setAttribute("cy", ny);
+        dot.setAttribute("r", 6);
+        dot.setAttribute("fill", categoryHex[c.cat] || "#5b3fa6");
+        dot.setAttribute("stroke", "#fff");
+        dot.setAttribute("stroke-width", "1.5");
+        dot.classList.add("bubble");
+        dot.addEventListener("click", () => openDrawer(c));
+        nodeLayer.appendChild(dot);
+      });
+    });
+
+    // Render list
+    function ringSvg(pct) {
+      const r = 15, circ = 2 * Math.PI * r;
+      const offset = circ - (pct / 100) * circ;
+      return `<svg width="38" height="38"><circle cx="19" cy="19" r="${r}" stroke="#ece7f8" stroke-width="4" fill="none"/>
+        <circle cx="19" cy="19" r="${r}" stroke="#5b3fa6" stroke-width="4" fill="none" stroke-dasharray="${circ}" stroke-dashoffset="${offset}" stroke-linecap="round"/></svg>`;
+    }
+    function avatarRow(avatars) {
+      return (avatars || []).map(a => {
+        const isMore = String(a).startsWith('+');
+        return `<span class="${isMore ? 'more' : ''}" style="${isMore ? '' : `background:${categoryHex["Roads"]}`}">${a}</span>`;
+      }).join('');
+    }
+
+    clusters.forEach(c => {
+      const card = document.createElement('div');
+      card.className = 'cluster-card';
+      card.innerHTML = `
+        <div class="row-top">
+          <div>
+            <span class="cat-pill" style="background:${categoryHex[c.cat] || '#5b3fa6'}">${c.cat}</span>
+            <h3 style="margin-top:9px">${c.title}</h3>
+            <p class="sub">${c.count} reports · ${c.dateRange}</p>
+          </div>
+          <div class="ring">
+            ${ringSvg(c.confidence)}
+            <div class="pct">${c.confidence}%</div>
+          </div>
+        </div>
+        <div class="row-bottom">
+          <div class="avatars">${avatarRow(c.avatars)}</div>
+          <span class="status-badge ${statusClass[c.status] || 'status-new'}">${c.status}</span>
+        </div>
+        <button class="review-btn">Review cluster</button>
+      `;
+      card.addEventListener('click', () => openDrawer(c));
+      listEl.appendChild(card);
+    });
+  }
+
+  // Drawer
+  let currentActiveCluster = null;
+  const drawer = document.getElementById('drawer');
+  const scrim = document.getElementById('scrim');
+  const drawerTitle = document.getElementById('drawerTitle');
+  const drawerCat = document.getElementById('drawerCat');
+  const complaintList = document.getElementById('complaintList');
+
+  function openDrawer(c) {
+    currentActiveCluster = c;
+    drawerTitle.textContent = c.title;
+    drawerCat.textContent = c.cat;
+    drawerCat.style.background = categoryHex[c.cat] || '#5b3fa6';
+
+    const complaints = c.complaints || [];
+    complaintList.innerHTML = complaints.map(item => `
+      <div class="complaint-item">
+        <div class="thumb"></div>
+        <div>
+          <div class="meta">${item.time} · ${item.by}</div>
+          <div class="snippet">${item.text}</div>
+        </div>
+      </div>
+    `).join('');
+
+    drawer.classList.add('open');
+    scrim.classList.add('open');
+  }
+
+  function closeDrawer() {
+    drawer.classList.remove('open');
+    scrim.classList.remove('open');
+  }
+
+  document.getElementById('closeDrawer').addEventListener('click', closeDrawer);
+  scrim.addEventListener('click', closeDrawer);
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDrawer(); });
+
+  // Merge button inside drawer
+  const mergeBtn = document.querySelector('.drawer-actions .btn-primary');
+  if (mergeBtn) {
+    mergeBtn.addEventListener('click', async () => {
+      if (!currentActiveCluster) return;
+      try {
+        mergeBtn.disabled = true;
+        mergeBtn.textContent = 'Merging...';
+        const res = await fetch(`/api/v1/authority/clusters/${currentActiveCluster.id}/merge`, { method: 'POST' });
+        if (res.ok) {
+          alert(`Cluster "${currentActiveCluster.title}" successfully merged and dispatched to department!`);
+          closeDrawer();
+          loadAuthorityData();
+        }
+      } catch (e) {
+        alert('Error merging cluster');
+      } finally {
+        mergeBtn.disabled = false;
+        mergeBtn.textContent = '✈ Merge & assign to department';
+      }
+    });
+  }
+
+  // View toggle buttons
+  const toggleButtons = document.querySelectorAll('.view-toggle button');
+  if (toggleButtons.length >= 2) {
+    toggleButtons[0].addEventListener('click', () => { window.location.href = '/authority'; });
+    toggleButtons[1].addEventListener('click', () => { window.location.href = '/authority/map'; });
+  }
+
+  loadAuthorityData();
+</script>
+
+</body>
+</html>
