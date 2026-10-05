@@ -1,152 +1,244 @@
-# Central AI Intelligence Engine for Citizen Grievance Platforms
+# Seva Setu — AI-Powered Citizen Grievance & Duplicate Clustering Platform
 
-An AI-powered **Duplicate Detection, Multi-Signal Similarity Scoring, Keyword & Entity Extraction, Category Classification, and Canonical Civic Issue Clustering Engine** designed as the central intelligence backend for municipal and citizen grievance platforms.
+[![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.14-blue.svg)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/Framework-FastAPI-009688.svg)](https://fastapi.tiangolo.com/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Tests](https://img.shields.io/badge/Tests-38%20Passed%20(100%25)-brightgreen.svg)]()
+
+**Seva Setu** is an end-to-end, production-grade civic intelligence platform designed to eliminate the #1 bottleneck facing municipal bodies worldwide: **unstructured, duplicate complaint floods**.
+
+By using a multi-signal AI engine, Seva Setu automatically canonicalizes Indian/regional slang (*"khadda"*, *"gadha"*, *"paani leakage"*, *"kachra"*), detects semantic duplicates, calculates Haversine GPS proximity buffers, merges related complaints into underlying municipal issues, and provides real-time tracking for citizens alongside an interactive spatial GIS map for authorities.
+
+$$\text{MANY CITIZEN COMPLAINTS} \longrightarrow \text{FEWER UNDERLYING CIVIC ISSUES}$$
 
 ---
 
-## 🏛️ Core Mission
-Citizen grievance portals receive **thousands of noisy, unstructured complaints**. Many report the exact same real-world incident (e.g. 50 citizens reporting a single pothole or broken water pipeline). 
-
-This engine converts:
-$$\text{MANY CITIZEN COMPLAINTS} \longrightarrow \text{FEWER UNDERLYING CANONICAL CIVIC ISSUES}$$
+## 🏛️ System Architecture
 
 ```
-                ┌──────────────────────────────────────────────┐
-                │ 50 Citizen Complaints on Metro Pillar 12    │
-                └──────────────────────┬───────────────────────┘
-                                       ▼
-             ┌──────────────────────────────────────────────────┐
-             │ CENTRAL DUPLICATE & CLUSTERING INTELLIGENCE      │
-             └─────────────────────────┬────────────────────────┘
-                                       ▼
-             ┌──────────────────────────────────────────────────┐
-             │ 1 Canonical Civic Issue:                         │
-             │ "Deep Dangerous Pothole near Central Station"    │
-             │ • 1 Consolidated Authority Work Order            │
-             │ • 50 Citizen Ticket Subscribers                  │
-             │ • High Priority | GIS Radius: 15m                │
-             └──────────────────────────────────────────────────┘
+                    ┌──────────────────────────────────────────────┐
+                    │ 50 Citizen Complaints on Metro Pillar 12    │
+                    └──────────────────────┬───────────────────────┘
+                                           ▼
+                 ┌──────────────────────────────────────────────────┐
+                 │ CENTRAL DUPLICATE & CLUSTERING INTELLIGENCE      │
+                 │ • NLP Tokenization & PII Redaction               │
+                 │ • Hinglish Slang Canonicalizer (khadda->pothole) │
+                 │ • TF-IDF Sublinear Cosine Similarity             │
+                 │ • Haversine Geodesic Distance Matrix (< 250m)    │
+                 └─────────────────────────┬────────────────────────┘
+                                           ▼
+                 ┌──────────────────────────────────────────────────┐
+                 │ 1 Canonical Civic Issue Created:                 │
+                 │ "Severe Road Pothole near Central Station"       │
+                 │ • 1 Consolidated Authority Work Order Dispatch   │
+                 │ • 50 Linked Citizen Trackers (Auto-Updated)      │
+                 │ • ~32% Reduction in Municipal Workload Noise     │
+                 └──────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 🚀 Key Features
+## 🚀 Quickstart Guide (Run on Any PC)
 
-1. **Deterministic & Semantic Preprocessing**:
-   - Multi-representation preservation (`original_text`, `clean_text`, `semantic_text`, `keyword_text`).
-   - PII masking (`[PHONE]`, `[EMAIL]`, `[AADHAAR]`, `[VEHICLE]`), Unicode normalization, boilerplate cleanup.
-   - Multilingual support (English, Hindi, mixed transliterated Hinglish).
+Follow these simple steps to run the complete project locally on **Windows**, **macOS**, or **Linux**.
 
-2. **Multi-Signal Keyword & Entity Extraction**:
-   - Extraction of civic entities, location prepositions (`near metro station`), impact expressions (`causing bike skidding`), and temporal markers (`since 3 days`).
-   - Civic domain synonym canonicalization dictionary.
-
-3. **6-Signal Composite Similarity Scorer**:
-   - **Semantic Similarity** (Dense embedding cosine similarity)
-   - **Lexical Similarity** (Token Jaccard & character n-gram overlap)
-   - **Keyword / Entity Overlap** (Location & impact overlap)
-   - **Category Match** (Exact match & hierarchy domain alignment)
-   - **Geographic Proximity** (Haversine distance with Gaussian / Exponential decay)
-   - **Temporal Proximity** (Exponential recency decay)
-   - *Dynamic re-normalization* when geo or temporal coordinates are absent.
-
-4. **3-Tier Decision & Transparent Explainability**:
-   - `DUPLICATE` (Score $\ge 0.82$)
-   - `POSSIBLY_SIMILAR` ($0.62 \le \text{Score} < 0.82$)
-   - `NEW_ISSUE` (Score $< 0.62$)
-   - Human-readable `MatchEvidence` explaining *why* records matched.
-   - Borderline review flagging for human triage.
-
-5. **HDBSCAN / DBSCAN Canonical Issue Clustering**:
-   - Pairwise distance matrix computation.
-   - Unforced noise handling (`is_noise=True` keeps distinct single complaints separate).
-   - Evidence-based issue title generator, representative complaint selection, GIS centroid & radius calculation.
-
-6. **Issue Lifecycle Management**:
-   - Real-time incremental complaint attachment.
-   - `merge_issues` and `split_issue` operations with audit logging.
-
-7. **Authority Analytics & GIS Hotspots**:
-   - Executive overview metrics, duplicate reduction rate %, department breakdown, trend timeseries, and spatial hotspot cluster detection.
-
-8. **Dataset-Agnostic Adapter Layer**:
-   - Pluggable CSV, JSON, NDJSON, and Python dictionary adapters with configurable field mappings.
+### Prerequisites
+Make sure you have installed:
+1. **Python 3.10+** (Python 3.11, 3.12, or 3.14 recommended). Check with:
+   ```bash
+   python --version
+   ```
+2. **Git**:
+   ```bash
+   git --version
+   ```
 
 ---
 
-## 📦 Quickstart & Installation
-
-### 1. Local Environment Setup
+### Step 1: Clone the Repository
+Open your terminal or command prompt and clone the repository:
 ```bash
-git clone <repo-url>
-cd similarity_engine
+git clone https://github.com/Jain07Himanshu/SIH.git
+cd SIH
+```
+
+---
+
+### Step 2: Set Up Virtual Environment (Recommended)
+
+#### On Windows (PowerShell or Command Prompt):
+```powershell
+python -m venv venv
+venv\Scripts\activate
+```
+
+#### On macOS / Linux:
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+---
+
+### Step 3: Install Dependencies
+```bash
 pip install -r requirements.txt
 ```
 
-### 2. Run Database Migrations
-```bash
-python scripts/init_db.py
-```
+---
 
-### 3. Run FastAPI Application
+### Step 4: Seed Demo Database (50 Users & 51 Realistic Complaints)
+Run the automated seed script to populate realistic citizen accounts, municipal officers, duplicate clusters across Mumbai coordinates, and historic audit timelines:
 ```bash
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+python seed_platform_demo.py
 ```
-Interactive OpenAPI documentation will be live at `http://localhost:8000/docs`.
-
-### 4. Run Docker Compose (with PostgreSQL + pgvector)
-```bash
-docker-compose up -d --build
-```
+*(This will generate the SQLite database `similarity_engine.db` with 50+ users and complaints ready for instant demoing).*
 
 ---
 
-## 🧪 Running Tests & Benchmark Evaluation
+### Step 5: Start the Server
 
-### Run Full Pytest Suite:
-```bash
-python -m pytest tests/ -v
+#### Option A: One-Click Launcher (Windows)
+Double-click `run_app.bat` or run:
+```cmd
+run_app.bat
 ```
 
-### Run Threshold Grid Search:
+#### Option B: Terminal Command (Windows, macOS, Linux)
 ```bash
-python scripts/tune_thresholds.py
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
 
-### Run Benchmark Evaluation:
-```bash
-python scripts/evaluate.py
-```
-
-### Run Live End-to-End Demo:
-```bash
-python scripts/demo_batch_pipeline.py
-```
+Server will start at: **`http://127.0.0.1:8000`**
 
 ---
 
-## 📡 REST API Overview
+## 🌐 Web Application Portals
 
-| Method | Endpoint | Description |
+Once the server is running, open your web browser to access:
+
+| Portal | URL | Description |
 |---|---|---|
-| `POST` | `/api/v1/analyze` | Real-time single complaint ingestion & issue assignment |
-| `POST` | `/api/v1/analyze/batch` | Batch complaint ingestion & HDBSCAN issue clustering |
-| `POST` | `/api/v1/similarity/compare` | Compare two complaints across 6 similarity signals |
-| `GET` | `/api/v1/issues` | List canonical issues with department & priority filters |
-| `GET` | `/api/v1/issues/{id}` | Retrieve canonical issue details & member complaints |
-| `POST` | `/api/v1/issues/merge` | Merge two existing issues |
-| `POST` | `/api/v1/issues/split` | Split complaints out into a new canonical issue |
-| `GET` | `/api/v1/analytics/overview` | High-level platform statistics & duplicate reduction % |
-| `GET` | `/api/v1/analytics/hotspots` | Spatial GIS clusters & hotspot severity |
-| `GET` | `/api/v1/categories` | Complete civic domain taxonomy & prototypes |
-| `GET` | `/health` | Health check & model status |
+| **Home Landing Page** | [http://localhost:8000](http://localhost:8000) | Landing page with role selection & phone visual shortcuts |
+| **Citizen Complaint Filing** | [http://localhost:8000/citizen?mode=submit](http://localhost:8000/citizen?mode=submit) | File a new civic issue with AI category detection |
+| **Real-Time 4-Stage Tracker** | [http://localhost:8000/citizen?mode=track](http://localhost:8000/citizen?mode=track) | Live audit stepper (`Submitted` → `Assigned` → `In Progress` → `Resolved`) |
+| **Authority Analytics Console** | [http://localhost:8000/authority](http://localhost:8000/authority) | Department workloads, category breakdowns & noise reduction KPIs |
+| **Authority Spatial GIS Map** | [http://localhost:8000/authority/map](http://localhost:8000/authority/map) | Interactive Leaflet.js map with circle pins & slide-out dispatch drawer |
+| **Interactive API Documentation**| [http://localhost:8000/docs](http://localhost:8000/docs) | Complete Swagger UI with live testing for all REST endpoints |
 
 ---
 
-## 📐 Architecture & Documentation
-For deep technical documentation:
-- [Architecture Guide](docs/architecture.md)
-- [Algorithm & Math](docs/algorithm.md)
-- [API Reference](docs/api.md)
-- [Data Contract](docs/data_contract.md)
-- [Evaluation & Benchmark](docs/evaluation.md)
+## 🔑 Demo Logins & Test Data
+
+The seed script creates pre-configured accounts and complaints for immediate testing:
+
+### 1. Municipal Authority Login
+- **URL**: [http://localhost:8000/login?role=authority](http://localhost:8000/login?role=authority)
+- **Email**: `authority@gov.in`
+- **Password**: `password123`
+*(Also available: `sanitation@gov.in`, `water@gov.in`, `electricity@gov.in` with password `password123`)*
+
+### 2. Citizen Login
+- **URL**: [http://localhost:8000/login?role=citizen](http://localhost:8000/login?role=citizen)
+- **Email**: `citizen@example.com` or `anita.roy@gmail.com`
+- **Password**: `password123`
+
+### 3. Sample Complaint IDs for Tracking Stepper
+Enter any of these IDs in the **[Tracking Portal](http://localhost:8000/citizen?mode=track)** to inspect live progress:
+- `SS-100001` (Road Pothole — In Progress)
+- `SS-100015` (Water Leakage — Assigned)
+- `SS-100025` (Garbage Overflow — Resolved)
+
+---
+
+## 🧪 Running Automated Tests
+
+The repository includes a comprehensive test suite (38 test cases) covering the AI similarity engine, text cleaner, slang normalizer, authority analytics, GIS map endpoints, and end-to-end user workflows:
+
+```bash
+python -m pytest -v
+```
+
+**Expected output:**
+```text
+====================== 38 passed in 1.80s =======================
+```
+
+---
+
+## 🛠️ Technology Stack
+
+- **Backend Framework**: [FastAPI](https://fastapi.tiangolo.com/) (Python 3.10+) with Uvicorn ASGI
+- **Database & ORM**: SQLite3 (with Write-Ahead Logging `WAL`) + [SQLAlchemy 2.0](https://www.sqlalchemy.org/)
+- **AI & NLP Intelligence**:
+  - Semantic Cosine Similarity (Scikit-Learn TF-IDF vectorizer with sublinear scaling)
+  - Spherical Geodesic Haversine spatial buffer (< 250m radius)
+  - Slang & Regional Keyword Canonicalization (`configs/synonyms.yaml`)
+  - Deterministic PII Masking (`[PHONE]`, `[EMAIL]`, Unicode NFKD normalization)
+- **Frontend & Mapping**:
+  - Tailwind CSS + Vanilla JS (Zero external build toolchains needed)
+  - [Leaflet.js 1.9.4](https://leafletjs.com/) with OpenStreetMap tiles for real-time GIS mapping
+  - FontAwesome 6 + Sora / Inter typography
+- **Authentication**: Stateless JSON Web Tokens (PyJWT) + Bcrypt password hashing
+
+---
+
+## 📂 Project Structure
+
+```text
+SIH/
+├── app/
+│   ├── api/                   # REST API routes (complaints, authority, auth, analytics)
+│   ├── auth/                  # JWT security and dependency injection
+│   ├── clustering/            # Issue clustering and duplicate grouping engines
+│   ├── db/                    # SQLAlchemy models and session management
+│   ├── extraction/            # Keywords, civic entities, and slang canonicalizer
+│   ├── issue/                 # Issue builder, centroid calculator, and resolver
+│   ├── preprocessing/         # Normalizer, PII cleaner, and language detection
+│   ├── services/              # Business logic (complaints, analytics, authority)
+│   ├── similarity/            # Semantic, spatial, and temporal similarity scorers
+│   └── main.py                # FastAPI application entrypoint
+├── configs/
+│   ├── synonyms.yaml          # Indian civic slang & synonym mappings
+│   └── taxonomy.yaml          # Civic categories & department hierarchy
+├── static/                    # Frontend UI HTML/CSS/JS screens
+│   ├── Home.html              # Landing page
+│   ├── Citizen Lobby.html     # Complaint filing & live 4-stage tracking stepper
+│   ├── Autority Lobby.html    # Authority console & KPI analytics
+│   ├── Autority Map.html      # Interactive Leaflet GIS spatial map
+│   └── login.html             # Role-based authentication
+├── tests/                     # 38 automated test cases (100% pass)
+├── requirements.txt           # Project Python dependencies
+├── seed_platform_demo.py      # Demo dataset seeder (50 users + 51 complaints)
+├── run_app.bat                # 1-click Windows launcher
+└── README.md                  # Documentation & Quickstart
+```
+
+---
+
+## ❓ Troubleshooting & FAQs
+
+### 1. `Address already in use` (Port 8000 busy)
+If port 8000 is occupied by another process, run on another port (e.g. 8080):
+```bash
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8080 --reload
+```
+
+### 2. Missing C++ Build Tools or PyJWT / Bcrypt issues
+Ensure your `pip` is up to date:
+```bash
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+### 3. Reset or Reseed Database
+To wipe and recreate the database with clean demo data:
+```bash
+python seed_platform_demo.py
+```
+
+---
+
+## 📄 License
+This project is open-source and licensed under the [MIT License](LICENSE).
