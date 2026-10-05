@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Seva Setu — Citizen Grievance & AI Intelligence Portal</title>
+  <link rel="icon" type="image/png" href="/static/logo.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -52,11 +53,12 @@
     }
     .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; }
     .brand-icon {
-      width: 44px; height: 44px; border-radius: 12px;
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      display: grid; place-items: center; color: white; font-size: 21px;
-      box-shadow: 0 8px 20px rgba(91, 63, 166, .3);
+      width: 48px; height: 48px; border-radius: 12px;
+      object-fit: contain;
+      box-shadow: 0 4px 14px rgba(91, 63, 166, .2);
+      transition: transform 0.2s ease;
     }
+    .brand:hover .brand-icon { transform: scale(1.05); }
     .brand-name { font-size: 19px; font-weight: 700; letter-spacing: -.5px; color: var(--ink-800); }
     .brand-tagline { font-size: 11px; color: var(--ink-400); margin-top: 2px; font-weight: 500; }
 
@@ -214,7 +216,7 @@
 <body>
   <header class="navbar">
     <a href="/" class="brand">
-      <div class="brand-icon">📍</div>
+      <img src="/static/logo.png" alt="Seva Setu Logo" class="brand-icon" />
       <div>
         <div class="brand-name">Seva Setu</div>
         <div class="brand-tagline">AI Citizen Grievance Platform</div>
@@ -269,10 +271,13 @@
       <div class="phone">
         <div class="notch"></div>
         <div class="phone-screen">
-          <div class="phone-header">
-            <div>
-              <small>Civic Portal</small>
-              <strong>Seva Setu Active</strong>
+          <div class="phone-header" style="display:flex; align-items:center; justify-content:space-between;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <img src="/static/logo.png" alt="Logo" style="width:24px; height:24px; object-fit:contain; border-radius:6px;" />
+              <div>
+                <small style="display:block; font-size:10px; color:var(--ink-400);">Civic Portal</small>
+                <strong style="font-size:12px;">Seva Setu Active</strong>
+              </div>
             </div>
             <span>🔔</span>
           </div>
